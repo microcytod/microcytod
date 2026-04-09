@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>μCytoD™ – Documentation & Protocols</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f4f7ff;
+      --bg-panel:#ffffff;
+      --accent:#0047ab;
+      --accent-soft:#e0ecff;
+      --accent-strong:#002b6f;
+      --accent-warm:#ff9f43;
+      --text-main:#0f172a;
+      --text-muted:#6b7280;
+      --shadow-soft:0 18px 45px rgba(15,23,42,0.12);
+      --radius-lg:22px;
+      --radius-md:16px;
+      --radius-sm:10px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{
+      margin:0;
+      padding:0;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top left,#e1edff 0%,#f7fbff 40%,#f8f2ff 100%);
+      color:var(--text-main);
+      overflow-x:hidden;
+    }
+    
+    body{padding-top:72px;}
+a{text-decoration:none;color:inherit;}
+
+    /* NAV */
+    #nav{
+      position:fixed;
+      top:0;
+      z-index:80;
+      backdrop-filter:blur(14px);
+      background:rgba(244,248,255,0.9);
+      border-bottom:1px solid rgba(148,163,184,0.16);
+      left:0;
+  right:0;
+  width:100%;
+}
+    #nav-inner{
+      max-width:1200px;
+      margin:0 auto;
+      padding:10px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+    #brand{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    #brand-logo{
+      width:30px;
+      height:30px;
+      border-radius:14px;
+      background:conic-gradient(from 210deg,#0047ab,#00c6ff,#22c55e,#ff9f43,#0047ab);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:700;
+      font-size:14px;
+      box-shadow:0 10px 24px rgba(15,23,42,0.35);
+    }
+    #brand-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1.15;
+    }
+    #brand-text span:first-child{
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:.08em;
+  text-transform:none;   /* <- keep μCytoD™ exactly */
+  color:#052a67;
+}
+    #brand-text span:last-child{
+      font-size:11px;
+      color:var(--text-muted);
+    }
+    #nav-links{
+      display:flex;
+      gap:14px;
+      font-size:13px;
+      color:var(--text-muted);
+      align-items:center;
+    }
+    #nav-links a{
+      padding:4px 10px;
+      border-radius:999px;
+      transition:background .15s ease,color .15s ease;
+    }
+    #nav-links a:hover{
+      background:rgba(148,163,184,0.18);
+      color:var(--accent-strong);
+    }
+    #nav-links a.active{
+      background:#ffffff;
+      color:var(--accent-strong);
+      box-shadow:0 8px 18px rgba(15,23,42,0.18);
+      font-weight:600;
+    }
+    #nav-cta{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .btn{
+      border:none;
+      border-radius:999px;
+      padding:7px 14px;
+      font-size:12px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      transition:transform .12s ease,box-shadow .12s ease,background .16s ease,color .16s ease;
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,#0047ab,#00c6ff);
+      color:#ffffff;
+      box-shadow:0 12px 26px rgba(37,99,235,0.35);
+      font-weight:600;
+    }
+    .btn-primary:hover{
+      transform:translateY(-1px);
+      box-shadow:0 18px 40px rgba(37,99,235,0.45);
+    }
+    .btn-ghost{
+      background:rgba(255,255,255,0.95);
+      color:var(--accent-strong);
+      border:1px solid rgba(148,163,184,0.5);
+    }
+    .btn-ghost:hover{background:#ffffff;}
+
+    /* WRAPPER */
+    #wrapper{
+      max-width:1200px;
+      margin:0 auto;
+      padding:24px 18px 40px;
+    }
+
+    /* HEADER */
+    #page-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:18px;
+      margin-bottom:16px;
+    }
+    #page-title{
+      font-size:22px;
+      font-weight:700;
+      color:var(--accent-strong);
+    }
+    #page-subtitle{
+      font-size:12px;
+      color:var(--text-muted);
+      max-width:640px;
+      line-height:1.55;
+    }
+    #header-badge{
+      font-size:11px;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#e0ecff;
+      color:var(--accent-strong);
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      font-weight:600;
+    }
+
+    .section{
+      margin-bottom:28px;
+    }
+    .section-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .section-title{
+      font-size:18px;
+      font-weight:700;
+      color:var(--accent-strong);
+    }
+    .section-subtitle{
+      font-size:12px;
+      color:var(--text-muted);
+      max-width:520px;
+    }
+
+    /* SOP GRID */
+    #sop-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+    }
+    .sop-card{
+      background:var(--bg-panel);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-soft);
+      padding:10px 12px 10px;
+      font-size:12px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      transition:transform .15s ease,box-shadow .15s ease;
+      cursor:pointer;
+    }
+    .sop-card:hover{
+      transform:translateY(-3px);
+      box-shadow:0 20px 45px rgba(15,23,42,0.22);
+    }
+    .sop-label{
+      font-size:10px;
+      color:var(--accent-strong);
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+    }
+    .sop-title{
+      font-size:13px;
+      font-weight:600;
+      color:var(--accent-strong);
+    }
+    .sop-body{
+      font-size:11px;
+      color:var(--text-muted);
+      line-height:1.45;
+    }
+    .sop-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:5px;
+      margin-top:2px;
+      font-size:10px;
+    }
+    .sop-tag{
+      padding:2px 6px;
+      border-radius:999px;
+      background:#f3f4ff;
+      color:var(--text-muted);
+    }
+    .sop-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:4px;
+    }
+    .sop-actions .btn{
+      padding:5px 10px;
+      font-size:11px;
+    }
+
+    /* PUBLICATIONS */
+    #pub-tabs{
+      display:flex;
+      gap:6px;
+      padding:3px;
+      border-radius:999px;
+      background:#e5edff;
+      margin-bottom:12px;
+      overflow-x:auto;
+    }
+    #pub-tabs button{
+      border:none;
+      background:transparent;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:11px;
+      color:var(--text-muted);
+      cursor:pointer;
+      white-space:nowrap;
+      transition:all .15s ease;
+    }
+    #pub-tabs button.active{
+      background:#ffffff;
+      color:var(--accent-strong);
+      font-weight:600;
+      box-shadow:0 10px 24px rgba(15,23,42,0.16);
+    }
+
+    #pub-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .pub-card{
+      background:var(--bg-panel);
+      border-radius:var(--radius-md);
+      box-shadow:0 12px 32px rgba(15,23,42,0.16);
+      padding:10px 10px 9px;
+      font-size:11px;
+    }
+    .pub-title{
+      font-weight:600;
+      color:var(--accent-strong);
+      margin-bottom:3px;
+      font-size:12px;
+    }
+    .pub-authors{
+      color:var(--text-muted);
+      margin-bottom:3px;
+    }
+    .pub-meta{
+      font-size:10px;
+      color:var(--text-muted);
+      margin-bottom:4px;
+    }
+    .pub-links a{
+      font-size:11px;
+      color:var(--accent);
+    }
+
+    /* FOOTER */
+    #footer{
+      margin-top:24px;
+      padding-top:10px;
+      border-top:1px solid rgba(148,163,184,0.3);
+      font-size:10px;
+      color:var(--text-muted);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    /* MODAL (SOP ZOOM VIEW) */
+    #sop-modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,0.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:40;
+      padding:16px;
+    }
+    #sop-modal{
+      background:#ffffff;
+      border-radius:24px;
+      box-shadow:0 30px 70px rgba(15,23,42,0.4);
+      max-width:840px;
+      width:100%;
+      max-height:90vh;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    #sop-modal-header{
+      padding:10px 16px 8px 18px;
+      border-bottom:1px solid #e5e7f5;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    #sop-modal-title{
+      font-size:14px;
+      font-weight:600;
+      color:var(--accent-strong);
+    }
+    #sop-modal-meta{
+      font-size:10px;
+      color:var(--text-muted);
+      margin-top:2px;
+    }
+    #sop-modal-header-left{
+      display:flex;
+      flex-direction:column;
+    }
+    #sop-modal-buttons{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    #sop-modal-close{
+      width:26px;
+      height:26px;
+      border-radius:999px;
+      border:none;
+      background:#f3f4ff;
+      color:#111827;
+      cursor:pointer;
+      font-size:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #sop-modal-close:hover{
+      background:#e0e7ff;
+    }
+    #sop-modal-body{
+      padding:10px 18px 14px;
+      overflow-y:auto;
+    }
+    .sop-section-block{
+      border-radius:16px;
+      background:#f8fafc;
+      border:1px solid #e5e7f5;
+      padding:8px 10px 8px;
+      margin-bottom:8px;
+    }
+    .sop-section-title{
+      font-size:11px;
+      font-weight:600;
+      color:var(--accent-strong);
+      margin-bottom:4px;
+    }
+    .sop-section-steps{
+      font-size:11px;
+      color:var(--text-muted);
+      padding-left:16px;
+    }
+    .sop-section-steps li{
+      margin-bottom:4px;
+    }
+
+    /* PRINT: only print the SOP modal content */
+    @media print{
+      body *{
+        visibility:hidden !important;
+      }
+      #sop-modal-backdrop,
+      #sop-modal,
+      #sop-modal *{
+        visibility:visible !important;
+      }
+      #sop-modal-backdrop{
+        position:absolute;
+        inset:0;
+        background:#ffffff;
+        padding:0;
+      }
+      #sop-modal{
+        box-shadow:none;
+        max-height:none;
+        border-radius:0;
+      }
+      #sop-modal-close,
+      #nav,
+      #footer{
+        display:none !important;
+      }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:980px){
+      #sop-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+      #pub-grid{
+        grid-template-columns:1fr;
+      }
+    }
+    @media (max-width:720px){
+      #nav-inner{flex-wrap:wrap;}
+      #nav-links{display:none;}
+      #sop-grid{
+        grid-template-columns:1fr;
+      }
+      #sop-modal{
+        max-height:95vh;
+      }
+    }
+    @media (max-width:520px){
+      #wrapper{padding-inline:14px;}
+    }
+  
+
+/* μCytoD SHARED NAV+FOOTER v1 */
+:root{
+  --uc-accent: var(--accent, #0047ab);
+  --uc-accent2: var(--accent2, #00c6ff);
+  --uc-muted: var(--text-muted, var(--muted, #667085));
+}
+/* NAV */
+#nav{
+  position:fixed; top:0; z-index:80;
+  backdrop-filter:blur(14px);
+  background:rgba(245,248,255,0.90);
+  border-bottom:1px solid rgba(148,163,184,0.16);
+  left:0;
+  right:0;
+  width:100%;
+}
+#nav-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:10px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+#brand{display:flex;align-items:center;gap:10px; text-decoration:none;}
+#brand-logo{
+  width:30px;height:30px;border-radius:14px;
+  background:conic-gradient(from 210deg,#0047ab,#00c6ff,#22c55e,#ff9f43,#0047ab);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;font-size:14px;
+  box-shadow:0 10px 24px rgba(15,23,42,0.35);
+  flex:0 0 auto;
+}
+#brand-text{display:flex;flex-direction:column;line-height:1.15;}
+#brand-text span:first-child{
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:.08em;
+  text-transform:none; /* keep μCytoD™ exactly */
+  color:#052a67;
+}
+#brand-text .brand-sub{font-size:11px;color:var(--uc-muted);}
+#nav-links{display:flex;gap:10px;align-items:center;color:var(--uc-muted);font-size:13px;}
+#nav-links a{padding:6px 10px;border-radius:999px;transition:all .15s ease;}
+#nav-links a:hover{background:rgba(148,163,184,0.16);color:#052a67;}
+#nav-links a.active{background:#fff;color:#052a67;box-shadow:0 10px 24px rgba(15,23,42,0.16);font-weight:600;}
+#nav-cta{display:flex;gap:10px;align-items:center;}
+
+/* buttons (shared) */
+.btn{
+  border:none;border-radius:999px;
+  padding:8px 14px;font-size:12px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:transform .12s ease, box-shadow .12s ease, background .16s ease, color .16s ease;
+  white-space:nowrap;
+}
+.btn:active{transform:translateY(0px) scale(.99);}
+.btn-primary{
+  background:linear-gradient(135deg,var(--uc-accent),var(--uc-accent2));
+  color:#fff;font-weight:700;
+  box-shadow:0 12px 26px rgba(37,99,235,0.35);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 18px 40px rgba(37,99,235,0.45);}
+.btn-ghost{background:rgba(255,255,255,0.98);color:#052a67;border:1px solid rgba(148,163,184,0.52);}
+.btn-ghost:hover{background:#fff;}
+
+/* mobile */
+.nav-toggle{
+  display:none;
+  width:40px;height:40px;border-radius:999px;
+  border:1px solid rgba(148,163,184,0.52);
+  background:rgba(255,255,255,0.98);
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+.nav-toggle:hover{background:#fff;}
+.nav-toggle-bars{width:18px;height:2px;background:#052a67;position:relative;display:block;}
+.nav-toggle-bars:before,.nav-toggle-bars:after{content:"";position:absolute;left:0;width:18px;height:2px;background:#052a67;}
+.nav-toggle-bars:before{top:-6px;}
+.nav-toggle-bars:after{top:6px;}
+
+.nav-mobile{
+  display:none;
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 18px 12px;
+}
+.nav-mobile a{
+  display:block;
+  padding:10px 12px;
+  border-radius:14px;
+  color:#052a67;
+  background:rgba(255,255,255,0.75);
+  border:1px solid rgba(148,163,184,0.22);
+  margin-top:8px;
+}
+.nav-mobile a.active{background:#fff;box-shadow:0 10px 24px rgba(15,23,42,0.12);font-weight:700;}
+.nav-mobile-cta{display:flex;gap:10px;flex-wrap:wrap;padding:10px 0 2px;}
+#nav.is-open .nav-mobile{display:block;}
+
+@media (max-width:860px){
+  #nav-links{display:none;}
+  .nav-toggle{display:inline-flex;}
+}
+@media (max-width:520px){
+  #nav-inner{padding:10px 14px;}
+  .btn{padding:8px 12px;font-size:11px;}
+}
+
+/* FOOTER */
+#footer{
+  margin-top:24px;
+  padding-top:12px;
+  border-top:1px solid rgba(148,163,184,0.30);
+  color:var(--uc-muted);
+  font-size:10px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+#footer span{line-height:1.4;}
+/* end shared */
+
+    :target{scroll-margin-top:84px;}
+
+</style>
+</head>
+<body>
+  <!-- NAV (shared) -->
+  <div id="nav">
+    <div id="nav-inner">
+      <a id="brand" href="index.html" title="μCytoD™">
+        <div id="brand-logo">μC</div>
+        <div id="brand-text">
+          <span>μCytoD™</span>
+          <span class="brand-sub">non‑viral mechanoporation</span>
+        </div>
+      </a>
+
+      <nav id="nav-links" aria-label="Primary">
+        <a href="index.html" class="">Home</a>
+        <a href="data.html" class="">Data Explorer</a>
+        <a href="docs.html" class="active">Protocols &amp; Publications</a>
+        <a href="team.html" class="">Team</a>
+      </nav>
+
+      <div id="nav-cta">
+        <button class="btn btn-ghost" data-nav="data.html">Explore data</button>
+        <button class="btn btn-primary" data-nav="team.html#contact">Request quote <span aria-hidden="true">→</span></button>
+        <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-controls="nav-mobile" aria-expanded="false">
+          <span class="nav-toggle-bars" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+
+    <div id="nav-mobile" class="nav-mobile" aria-label="Mobile">
+      <a href="index.html" class="">Home</a>
+      <a href="data.html" class="">Data Explorer</a>
+      <a href="docs.html" class="active">Protocols &amp; Publications</a>
+      <a href="team.html" class="">Team</a>
+      <div class="nav-mobile-cta">
+        <button class="btn btn-ghost" data-nav="data.html">Explore data</button>
+        <button class="btn btn-primary" data-nav="team.html#contact">Request quote <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </div>
+<div id="wrapper">
+  <div id="page-header">
+    <div>
+      <div id="page-title">Protocols &amp; publications</div>
+      <div id="page-subtitle">
+        Standard operating procedures derived from our stainless-steel filter + viscoelastic
+        mechanoporation study, plus links to peer-reviewed publications describing μCytoD™.
+      </div>
+    </div>
+    <div id="header-badge">From paper to bench-ready SOP</div>
+  </div>
+
+  <!-- SOP CARDS -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">Standard operating procedures (SOPs)</div>
+      <div class="section-subtitle">
+        Click <strong>View SOP</strong> to open a zoomed protocol. Use <strong>Download as PDF</strong>
+        in the viewer to save or print the current SOP.
+      </div>
+    </div>
+
+    <div id="sop-grid">
+      <!-- SOP 1: PEO solution preparation -->
+      <div class="sop-card" data-sop="peo">
+        <div class="sop-label">Buffer preparation</div>
+        <div class="sop-title">Preparation of viscoelastic PEO stock &amp; working solutions</div>
+        <div class="sop-body">
+          Preparation of a 20 mg/mL 8 MDa PEO stock in PBS, sterile filtration,
+          storage, and dilution to working concentrations used in mechanoporation.
+        </div>
+        <div class="sop-tags">
+          <div class="sop-tag">8 MDa PEO</div>
+          <div class="sop-tag">20 mg/mL stock</div>
+          <div class="sop-tag">PBS</div>
+        </div>
+        <div class="sop-actions">
+          <button class="btn btn-primary" type="button" onclick="openSOPModal('peo')">View SOP</button>
+        </div>
+      </div>
+
+      <!-- SOP 2: Filter & device setup -->
+      <div class="sop-card" data-sop="device">
+        <div class="sop-label">Device setup</div>
+        <div class="sop-title">Filter sterilization, assembly &amp; device setup</div>
+        <div class="sop-body">
+          Autoclaving stainless-steel filters and tips, assembling the cartridge,
+          and connecting to syringe pump for viscoelastic mechanoporation.
+        </div>
+        <div class="sop-tags">
+          <div class="sop-tag">Stainless-steel mesh</div>
+          <div class="sop-tag">Autoclave</div>
+          <div class="sop-tag">Syringe pump</div>
+        </div>
+        <div class="sop-actions">
+          <button class="btn btn-primary" type="button" onclick="openSOPModal('device')">View SOP</button>
+        </div>
+      </div>
+
+      <!-- SOP 3: FITC-dextran delivery -->
+      <div class="sop-card" data-sop="dextran">
+        <div class="sop-label">Intracellular delivery</div>
+        <div class="sop-title">FITC–dextran delivery via stainless-steel filters</div>
+        <div class="sop-body">
+          Cell preparation, pre-filtering, mixing with FITC–dextran in PEO,
+          passage through the filter, and post-delivery processing.
+        </div>
+        <div class="sop-tags">
+          <div class="sop-tag">MDA-MB-231</div>
+          <div class="sop-tag">Jurkat</div>
+          <div class="sop-tag">Dextran</div>
+        </div>
+        <div class="sop-actions">
+          <button class="btn btn-primary" type="button" onclick="openSOPModal('dextran')">View SOP</button>
+        </div>
+      </div>
+
+      <!-- SOP 4: mRNA delivery (3 groups) -->
+      <div class="sop-card" data-sop="mrna">
+        <div class="sop-label">mRNA delivery</div>
+        <div class="sop-title">eGFP mRNA delivery: lipofection, filter, and combined</div>
+        <div class="sop-body">
+          Comparative protocol for MDA-MB-231 cells: plate-based lipofection,
+          filter-only mechanoporation, and combined lipofection + filter approach.
+        </div>
+        <div class="sop-tags">
+          <div class="sop-tag">eGFP mRNA</div>
+          <div class="sop-tag">Lipofectamine 3000</div>
+          <div class="sop-tag">Filter + PEO</div>
+        </div>
+        <div class="sop-actions">
+          <button class="btn btn-primary" type="button" onclick="openSOPModal('mrna')">View SOP</button>
+        </div>
+      </div>
+
+      <!-- SOP 5: Readouts & analysis -->
+      <div class="sop-card" data-sop="analysis">
+        <div class="sop-label">Analytics</div>
+        <div class="sop-title">Flow cytometry, imaging &amp; viability assessment</div>
+        <div class="sop-body">
+          Sample handling for flow cytometry, fluorescence imaging, trypan blue
+          viability and cell counting, and basic analysis pipeline.
+        </div>
+        <div class="sop-tags">
+          <div class="sop-tag">Flow cytometry</div>
+          <div class="sop-tag">Microscopy</div>
+          <div class="sop-tag">Trypan blue</div>
+        </div>
+        <div class="sop-actions">
+          <button class="btn btn-primary" type="button" onclick="openSOPModal('analysis')">View SOP</button>
+        </div>
+      </div>
+
+      <!-- SOP 6: (Demo) Primary immune cell starting guide -->
+      <div class="sop-card" data-sop="primary">
+        <div class="sop-label">Demo SOP</div>
+        <div class="sop-title">Starting guide for primary T/NK cells (demo)</div>
+        <div class="sop-body">
+          A template SOP for adapting μCytoD™ to primary T/NK cells, based on
+          the same device principles. Replace with your internal protocol.
+        </div>
+        <div class="sop-tags">
+          <div class="sop-tag">Primary cells</div>
+          <div class="sop-tag">CAR-T / NK</div>
+        </div>
+        <div class="sop-actions">
+          <button class="btn btn-primary" type="button" onclick="openSOPModal('primary')">View SOP</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PUBLICATIONS -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">Publications</div>
+      <div class="section-subtitle">
+        Peer-reviewed articles and demo datasets describing μCytoD™ and related microfluidic
+        mechanoporation work. Use the tabs to switch between categories.
+      </div>
+    </div>
+
+    <div id="pub-tabs">
+      <button data-tab="journal" class="active">Journal articles</button>
+      <button data-tab="conference">Conference / posters</button>
+      <button data-tab="datasets">Demo datasets</button>
+    </div>
+
+    <div id="pub-grid">
+      <!-- Journal article: Analytical Chemistry paper -->
+      <div class="pub-card" data-group="journal">
+        <div class="pub-title">
+          Enhanced Intracellular Delivery via Stainless Steel Filters and Viscoelastic Fluids:
+          A High-Efficiency Alternative to Conventional Transfection
+        </div>
+        <div class="pub-authors">
+          Q. Zhao, P. P. Sarkar, Y. Ai
+        </div>
+        <div class="pub-meta">
+          <strong>Analytical Chemistry</strong>, ACS.
+          <br>
+          DOI:
+          <a href="https://doi.org/10.1021/acs.analchem.5c02251" target="_blank" rel="noopener">
+            10.1021/acs.analchem.5c02251
+          </a>
+        </div>
+        <div class="pub-links">
+          <!-- You can point this to your own hosted PDF later if you want -->
+          <a href="Paper/Paper 1- enhanced-intracellular-delivery-via-stainless-steel-filters-and-viscoelastic-fluids-a-high-efficiency.pdf" target="_blank">
+            View full text (PDF)
+          </a>
+        </div>
+      </div>
+
+      <!-- Placeholder for future journal articles -->
+      <div class="pub-card" data-group="journal">
+        <div class="pub-title">[Upcoming] μCytoD™-enabled non-viral engineering of immune cells</div>
+        <div class="pub-authors">To be announced</div>
+        <div class="pub-meta">
+          Planned manuscript on primary T/NK cell engineering using μCytoD™.
+        </div>
+        <div class="pub-links">
+          <span>Stay tuned—link will be added upon publication.</span>
+        </div>
+      </div>
+
+      <!-- Conference / posters (demo placeholders) -->
+      <div class="pub-card" data-group="conference" style="display:none;">
+        <div class="pub-title">[Demo] μCytoD™: High-throughput mechanoporation for mRNA delivery</div>
+        <div class="pub-authors">Conference abstract placeholder</div>
+        <div class="pub-meta">
+          Example entry for conference posters or oral presentations. Replace with your real events.
+        </div>
+        <div class="pub-links">
+          <a href="#" onclick="alert('Replace this with a real conference PDF or link');return false;">
+            View abstract / poster (demo)
+          </a>
+        </div>
+      </div>
+
+      <!-- Datasets (demo placeholders) -->
+      <div class="pub-card" data-group="datasets" style="display:none;">
+        <div class="pub-title">Demo dataset – mRNA delivery in MDA-MB-231 cells</div>
+        <div class="pub-authors">μCytoD™ internal</div>
+        <div class="pub-meta">
+          Annotated CSV file corresponding to the summary data displayed in the Data Explorer.
+        </div>
+        <div class="pub-links">
+          <a href="#" onclick="alert('Upload a CSV and update this link.');return false;">Download CSV (demo)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- FOOTER (shared) -->
+  <div id="footer" role="contentinfo">
+    <span>© <span id="uc-year"></span> μCytoD™</span>
+    <span>Non‑viral intracellular delivery • Data shown for benchmarking; results may vary.</span>
+  </div>
+
+</div>
+
+<!-- SOP MODAL (ZOOM VIEW + PDF DOWNLOAD) -->
+<div id="sop-modal-backdrop">
+  <div id="sop-modal">
+    <div id="sop-modal-header">
+      <div id="sop-modal-header-left">
+        <div id="sop-modal-title">SOP title</div>
+        <div id="sop-modal-meta">Protocol derived from μCytoD™ paper</div>
+      </div>
+      <div id="sop-modal-buttons">
+        <button class="btn btn-ghost" type="button" onclick="downloadCurrentSOP()">
+          Download as PDF
+        </button>
+        <button id="sop-modal-close" type="button" onclick="closeSOPModal()">×</button>
+      </div>
+    </div>
+    <div id="sop-modal-body">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- SOP DATA (paraphrased from paper) ---
+  const sopContent = {
+    peo: {
+      title: "Preparation of viscoelastic PEO stock & working solutions",
+      meta: "Based on the Materials and Methods section of the Analytical Chemistry article (PEO solution preparation).",
+      sections: [
+        {
+          title: "Reagents & stock solution (20 mg/mL)",
+          steps: [
+            "Use high-molecular-weight poly(ethylene oxide) (PEO), ~8 MDa.",
+            "Prepare PBS buffer and pre-warm to room temperature.",
+            "Weigh PEO to obtain a final stock concentration of 20 mg/mL (e.g., 1 g PEO in 50 mL PBS).",
+            "Gradually sprinkle PEO into PBS while stirring to avoid clumping.",
+            "Heat the mixture to about 60 °C and stir gently overnight until fully dissolved, forming a homogeneous viscous solution."
+          ]
+        },
+        {
+          title: "Sterile filtration & storage",
+          steps: [
+            "Filter the PEO solution through a bottle-top vacuum filter system with appropriate pore size (e.g., 0.22 µm).",
+            "Collect the sterile filtrate in a clean, labeled container.",
+            "Store the 20 mg/mL PEO stock at 4 °C.",
+            "Before use, visually inspect for any precipitates or contamination."
+          ]
+        },
+        {
+          title: "Working solution for mechanoporation",
+          steps: [
+            "On the day of use, dilute the PEO stock with PBS to the desired working concentration (e.g., 0.5–1 mg/mL as used in optimization experiments).",
+            "Mix gently by inversion; avoid excessive foaming.",
+            "Allow the working solution to equilibrate at room temperature for ~1 h before mixing with cells and cargo.",
+            "Record the batch number, preparation date and concentration in your lab notebook."
+          ]
+        }
+      ]
+    },
+
+    device: {
+      title: "Filter sterilization, assembly & device setup",
+      meta: "Summarized from the filter and tip preparation described under the intracellular delivery process.",
+      sections: [
+        {
+          title: "Stainless-steel filter & tip preparation",
+          steps: [
+            "Use custom stainless-steel filters (e.g., twilled Dutch weave mesh) cut to ~4 mm diameter to fit into stainless-steel dispensing tips.",
+            "Place filters and stainless-steel tips into an autoclave tray. Use appropriate packaging and autoclave indicator tape.",
+            "Autoclave at ~120 °C for 20 min following your facility’s standard sterilization cycle.",
+            "After autoclaving, allow components to cool completely before handling in a sterile environment (e.g., biosafety cabinet)."
+          ]
+        },
+        {
+          title: "Assembling the filter cartridge",
+          steps: [
+            "In a biosafety cabinet, insert a sterile stainless-steel filter disk into the lumen of the dispensing tip so that it sits securely.",
+            "Ensure the mesh is centered and in full contact with the inner wall to prevent bypass flow.",
+            "Visually inspect for defects, deformation or misalignment.",
+            "Label assembled tips (e.g., aperture size, batch, date)."
+          ]
+        },
+        {
+          title: "Connecting to syringe pump",
+          steps: [
+            "Attach the assembled stainless-steel tip to a sterile Luer-lock syringe (e.g., 5 mL).",
+            "Ensure a leak-free connection; tighten gently without overtightening.",
+            "Mount the syringe on a syringe pump (e.g., Legato 111) according to the manufacturer’s instructions.",
+            "Prime the system with buffer (PEO solution) at a low flow rate to remove air bubbles before introducing cells.",
+            "Record the filter geometry (aperture size, weave type) and planned flow rate in your protocol sheet."
+          ]
+        }
+      ]
+    },
+
+    dextran: {
+      title: "FITC–dextran delivery via stainless-steel filters",
+      meta: "Derived from the ‘Intracellular Delivery Process’ using FITC–dextran and PEO in MDA-MB-231 and Jurkat cells.",
+      sections: [
+        {
+          title: "Cell culture & harvest",
+          steps: [
+            "Maintain MDA-MB-231 cells in DMEM and Jurkat cells in RPMI, each supplemented with ~10% FBS and 1% penicillin–streptomycin.",
+            "Culture cells at 37 °C in a humidified incubator with ~5% CO₂.",
+            "On the day of delivery, collect cells by trypsinization (adherent) or centrifugation (suspension) and wash with PBS or culture medium.",
+            "Filter the cell suspension through a 30 µm pre-filter to remove clumps and large aggregates.",
+            "Adjust cell density to the desired concentration suitable for the device (e.g., 10⁶–10⁷ cells/mL)."
+          ]
+        },
+        {
+          title: "Cargo preparation & mixing",
+          steps: [
+            "Prepare FITC-labeled dextran at the target concentration in the PEO working solution (e.g., using concentrations and sizes from your experimental design).",
+            "Gently mix to ensure uniform dispersion of dextran without introducing bubbles.",
+            "Resuspend the washed cells in the PEO + FITC–dextran solution to reach the final cell density.",
+            "For each experimental condition, prepare ~1 mL of the cell–cargo mixture in a sterile tube."
+          ]
+        },
+        {
+          title: "Delivery through the stainless-steel filter",
+          steps: [
+            "Load 1 mL of the cell–cargo mixture into a sterile 5 mL syringe fitted with the assembled stainless-steel filter tip.",
+            "Mount the syringe on the syringe pump and set the required flow rate according to your optimization (e.g., values corresponding to 5–10 mL/min in the paper).",
+            "Run the sample through the filter once, collecting the effluent into a sterile tube.",
+            "Optionally, perform replicate runs or additional passes depending on your experimental design."
+          ]
+        },
+        {
+          title: "Post-delivery processing & readout",
+          steps: [
+            "Incubate the processed cells at room temperature for around 10 min to allow membrane recovery.",
+            "Wash cells ~3× with PBS (or appropriate buffer) to remove extracellular dextran.",
+            "Resuspend cells in culture medium and keep on ice or at 37 °C depending on whether immediate analysis or culture is planned.",
+            "Analyze intracellular fluorescence by flow cytometry and/or fluorescence microscopy.",
+            "Assess viability and cell density using trypan blue exclusion and an automated cell counter."
+          ]
+        }
+      ]
+    },
+
+    mrna: {
+      title: "eGFP mRNA delivery: lipofection, filter-only, and combined approach",
+      meta: "Summarized from the mRNA transfection protocol for MDA-MB-231 cells (StemMACS nuclear eGFP mRNA, Lipofectamine 3000).",
+      sections: [
+        {
+          title: "Common preparations",
+          steps: [
+            "Seed MDA-MB-231 cells in 24-well plates ~24 h before transfection so they reach the desired confluence on the day of delivery.",
+            "Prepare complete DMEM with 10% FBS and 1% penicillin–streptomycin.",
+            "Have eGFP-encoding mRNA (e.g., StemMACS nuclear eGFP) thawed on ice and mixed gently.",
+            "Use Lipofectamine 3000 or equivalent lipid reagent for the lipofection and combined groups."
+          ]
+        },
+        {
+          title: "Group 1 – Lipofection (plate-based)",
+          steps: [
+            "Dilute Lipofectamine 3000 (e.g., ~1.5 µL) in 25 µL DMEM (serum-free or low serum, according to the reagent manual).",
+            "Dilute eGFP mRNA (e.g., 100 ng) in a separate 25 µL DMEM aliquot.",
+            "Combine the diluted lipid and diluted mRNA, mix gently, and incubate at room temperature for ~15 min to form complexes.",
+            "Add the complex mixture dropwise to the cells in each well.",
+            "Incubate the cells for ~24 h at 37 °C, 5% CO₂ before analysis."
+          ]
+        },
+        {
+          title: "Group 2 – Filter-induced mRNA delivery",
+          steps: [
+            "Collect MDA-MB-231 cells from culture plates and resuspend in ~100 µL DMEM supplemented with 10% FBS and 1% penicillin–streptomycin.",
+            "Prepare 100 µL of 1 mg/mL PEO working solution and mix with the 100 µL cell suspension.",
+            "Add 100 ng eGFP mRNA to the mixture and gently mix to obtain a homogenous cell–mRNA–PEO suspension.",
+            "Load the ~200 µL mixture into a syringe connected to the stainless-steel filter tip.",
+            "Process the suspension through the filter once at the desired flow rate, then collect the effluent and dilute into culture medium in a 24-well plate.",
+            "Incubate the cells for ~24 h before fluorescence imaging and flow cytometry."
+          ]
+        },
+        {
+          title: "Group 3 – Combined lipofection + filter delivery",
+          steps: [
+            "Prepare lipid–mRNA complexes as in the lipofection group (Lipofectamine 3000 + eGFP mRNA).",
+            "Dilute the liposome solution in ~50 µL DMEM.",
+            "Mix the 50 µL liposome-containing solution with ~50 µL of a cell suspension and ~100 µL of 1 mg/mL PEO solution.",
+            "Load the mixture into a syringe with a stainless-steel filter tip and process through the filter once.",
+            "Transfer the effluent to a 24-well plate containing pre-warmed medium and incubate for ~24 h.",
+            "Compare delivery efficiency, intracellular dose (MFI) and viability among the three groups."
+          ]
+        }
+      ]
+    },
+
+    analysis: {
+      title: "Flow cytometry, imaging & viability assessment",
+      meta: "Based on the analytical workflow described in the Methods, including FlowJo analysis.",
+      sections: [
+        {
+          title: "Sample preparation",
+          steps: [
+            "After delivery, wash cells to remove extracellular cargo (e.g., 3× with PBS).",
+            "Resuspend cells in an appropriate buffer for flow cytometry (e.g., PBS + 1–2% FBS).",
+            "Filter the suspension again through a 30 µm pre-filter if aggregates are present.",
+            "Keep samples on ice or at 4 °C if analysis will be delayed."
+          ]
+        },
+        {
+          title: "Flow cytometry",
+          steps: [
+            "Use an appropriate flow cytometer (e.g., MACSQuant Analyzer) with filters matching your fluorophore (e.g., FITC).",
+            "Acquire forward/side scatter to gate live, single cells and exclude debris.",
+            "Record fluorescence intensity in the relevant channel for each sample (control, treated groups, etc.).",
+            "Export FCS files and analyze in FlowJo or similar software to calculate delivery efficiency (% positive cells) and median fluorescence intensity."
+          ]
+        },
+        {
+          title: "Viability & cell counting",
+          steps: [
+            "Mix an aliquot of each sample with 0.4% trypan blue solution according to the dye manufacturer’s instructions.",
+            "Measure viable and non-viable cell counts using an automated counter (e.g., Countess II FL) or manual hemocytometer.",
+            "Calculate viability (%) and absolute cell recovery relative to starting cell numbers.",
+            "Plot efficiency, MFI, viability and recovery together to identify optimal conditions."
+          ]
+        },
+        {
+          title: "Microscopy",
+          steps: [
+            "Seed an aliquot of delivered cells in appropriate imaging plates or slides.",
+            "Use a fluorescence microscope to capture representative images for each condition.",
+            "Qualitatively compare intracellular fluorescence, morphology and confluence.",
+            "Store representative images and cytometry plots together for each experiment, linked back to SOP and parameter settings."
+          ]
+        }
+      ]
+    },
+
+    primary: {
+      title: "Demo – starting guide for primary T/NK cells",
+      meta: "Template based on the same device principle; replace with your own primary cell protocol and internal optimization.",
+      sections: [
+        {
+          title: "Suggested starting points (to be customized)",
+          steps: [
+            "Begin with lower flow rates and single-pass operation compared to robust cell lines.",
+            "Screen a range of PEO concentrations (e.g., 0.25–0.75 mg/mL) for a balance between delivery and viability.",
+            "Monitor activation state and phenotype markers after delivery, not just viability and dose.",
+            "Always follow your institutional biosafety requirements for primary human samples."
+          ]
+        },
+        {
+          title: "Recommended documentation",
+          steps: [
+            "Record donor/source, isolation method, baseline viability and phenotype for each preparation.",
+            "Log all μCytoD™ parameters (filter aperture, number of filters, flow rate, PEO concentration, cargo type/amount).",
+            "Capture both functional readouts (e.g., cytokine secretion, killing assays) and delivery metrics.",
+            "Update this demo SOP into a full internal SOP once robust settings are established."
+          ]
+        }
+      ]
+    }
+  };
+
+  const modalBackdrop = document.getElementById("sop-modal-backdrop");
+  const modalTitle    = document.getElementById("sop-modal-title");
+  const modalMeta     = document.getElementById("sop-modal-meta");
+  const modalBody     = document.getElementById("sop-modal-body");
+  let currentSOPId    = null;
+
+  function buildSOPHtml(sop){
+    modalBody.innerHTML = "";
+    sop.sections.forEach(sec=>{
+      const block = document.createElement("div");
+      block.className = "sop-section-block";
+
+      const h = document.createElement("div");
+      h.className = "sop-section-title";
+      h.textContent = sec.title;
+      block.appendChild(h);
+
+      const ol = document.createElement("ol");
+      ol.className = "sop-section-steps";
+      sec.steps.forEach(step=>{
+        const li = document.createElement("li");
+        li.textContent = step;
+        ol.appendChild(li);
+      });
+      block.appendChild(ol);
+
+      modalBody.appendChild(block);
+    });
+  }
+
+  function openSOPModal(id){
+    const sop = sopContent[id];
+    if(!sop) return;
+    currentSOPId = id;
+    modalTitle.textContent = sop.title;
+    modalMeta.textContent  = sop.meta;
+    buildSOPHtml(sop);
+    modalBackdrop.style.display = "flex";
+  }
+
+  function closeSOPModal(){
+    modalBackdrop.style.display = "none";
+  }
+
+  // Download as PDF – uses window.print() with print CSS
+  function downloadCurrentSOP(){
+    if(!currentSOPId) return;
+    window.print();
+  }
+
+  // Close modal when clicking outside the card
+  modalBackdrop.addEventListener("click", e=>{
+    if(e.target === modalBackdrop){
+      closeSOPModal();
+    }
+  });
+
+  // Publications tab switching
+  const pubTabs = document.querySelectorAll("#pub-tabs button");
+  const pubCards = document.querySelectorAll(".pub-card");
+
+  function setPubTab(tab){
+    pubTabs.forEach(btn=>{
+      btn.classList.toggle("active", btn.dataset.tab === tab);
+    });
+    pubCards.forEach(card=>{
+      const group = card.getAttribute("data-group");
+      card.style.display = (group === tab) ? "block" : "none";
+    });
+  }
+
+  pubTabs.forEach(btn=>{
+    btn.addEventListener("click",()=> setPubTab(btn.dataset.tab));
+  });
+
+  // init
+  setPubTab("journal");
+</script>
+<script id="uc-shared-script">
+(function(){
+  // nav buttons
+  document.querySelectorAll('[data-nav]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var href = btn.getAttribute('data-nav');
+      if(href) location.href = href;
+    });
+  });
+
+  // mobile menu toggle
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('nav-toggle');
+  var mobile = document.getElementById('nav-mobile');
+
+  function closeMenu(){
+    if(!nav) return;
+    nav.classList.remove('is-open');
+    if(toggle) toggle.setAttribute('aria-expanded','false');
+  }
+
+  if(toggle && nav){
+    toggle.addEventListener('click', function(){
+      var open = nav.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  if(mobile){
+    mobile.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', closeMenu);
+    });
+  }
+
+  // year
+  var y = document.getElementById('uc-year');
+  if(y) y.textContent = new Date().getFullYear();
+
+  // close on escape
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeMenu();
+  });
+
+  // close on outside click
+  document.addEventListener('click', function(e){
+    if(!nav || !nav.classList.contains('is-open')) return;
+    if(!nav.contains(e.target)) closeMenu();
+  });
+})();
+</script>
+</body>
+</html>

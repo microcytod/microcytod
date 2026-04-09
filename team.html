@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>μCytoD™ Team & Partners</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f4f7ff;
+      --bg-panel:#ffffff;
+      --accent:#0047ab;
+      --accent-soft:#e0ecff;
+      --accent-strong:#002b6f;
+      --accent-warm:#ff9f43;
+      --text-main:#0f172a;
+      --text-muted:#6b7280;
+      --shadow-soft:0 18px 45px rgba(15,23,42,0.12);
+      --radius-lg:22px;
+      --radius-md:16px;
+      --radius-sm:10px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{
+      margin:0;
+      padding:0;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top left,#e1edff 0%,#f7fbff 40%,#f8f2ff 100%);
+      color:var(--text-main);
+      overflow-x:hidden;
+    }
+    
+    body{padding-top:72px;}
+a{text-decoration:none;color:inherit;}
+
+    /* NAV */
+    #nav{
+      position:fixed;
+      top:0;
+      z-index:80;
+      backdrop-filter:blur(14px);
+      background:rgba(244,248,255,0.9);
+      border-bottom:1px solid rgba(148,163,184,0.16);
+      left:0;
+  right:0;
+  width:100%;
+}
+    #nav-inner{
+      max-width:1200px;
+      margin:0 auto;
+      padding:10px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+    #brand{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    #brand-logo{
+      width:30px;
+      height:30px;
+      border-radius:14px;
+      background:conic-gradient(from 210deg,#0047ab,#00c6ff,#22c55e,#ff9f43,#0047ab);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:700;
+      font-size:14px;
+      box-shadow:0 10px 24px rgba(15,23,42,0.35);
+    }
+    #brand-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1.15;
+    }
+    #brand-text span:first-child{
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:.08em;
+  text-transform:none;   /* <- keep μCytoD™ exactly */
+  color:#052a67;
+}
+    #brand-text span:last-child{
+      font-size:11px;
+      color:var(--text-muted);
+    }
+    #nav-links{
+      display:flex;
+      gap:14px;
+      font-size:13px;
+      color:var(--text-muted);
+      align-items:center;
+    }
+    #nav-links a{
+      padding:4px 10px;
+      border-radius:999px;
+      transition:background .15s ease,color .15s ease;
+    }
+    #nav-links a:hover{
+      background:rgba(148,163,184,0.18);
+      color:var(--accent-strong);
+    }
+    #nav-links a.active{
+      background:#ffffff;
+      color:var(--accent-strong);
+      box-shadow:0 8px 18px rgba(15,23,42,0.18);
+      font-weight:600;
+    }
+    #nav-cta{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .btn{
+      border:none;
+      border-radius:999px;
+      padding:7px 14px;
+      font-size:12px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      transition:transform .12s ease,box-shadow .12s ease,background .16s ease,color .16s ease;
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,#0047ab,#00c6ff);
+      color:#ffffff;
+      box-shadow:0 12px 26px rgba(37,99,235,0.35);
+      font-weight:600;
+    }
+    .btn-primary:hover{
+      transform:translateY(-1px);
+      box-shadow:0 18px 40px rgba(37,99,235,0.45);
+    }
+    .btn-ghost{
+      background:rgba(255,255,255,0.95);
+      color:var(--accent-strong);
+      border:1px solid rgba(148,163,184,0.5);
+    }
+    .btn-ghost:hover{background:#ffffff;}
+
+    /* WRAPPER */
+    #wrapper{
+      max-width:1200px;
+      margin:0 auto;
+      padding:24px 18px 40px;
+    }
+
+    /* HEADER */
+    #page-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:18px;
+      margin-bottom:16px;
+    }
+    #page-title{
+      font-size:22px;
+      font-weight:700;
+      color:var(--accent-strong);
+    }
+    #page-subtitle{
+      font-size:12px;
+      color:var(--text-muted);
+      max-width:640px;
+      line-height:1.55;
+    }
+    #header-badge{
+      font-size:11px;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#e0ecff;
+      color:var(--accent-strong);
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      font-weight:600;
+    }
+
+    .section{
+      margin-bottom:28px;
+    }
+    .section-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .section-title{
+      font-size:18px;
+      font-weight:700;
+      color:var(--accent-strong);
+    }
+    .section-subtitle{
+      font-size:12px;
+      color:var(--text-muted);
+      max-width:520px;
+    }
+
+    /* TEAM FILTER */
+    #team-filter{
+      display:flex;
+      gap:6px;
+      padding:3px;
+      border-radius:999px;
+      background:#e5edff;
+      margin-bottom:12px;
+      overflow-x:auto;
+    }
+    #team-filter button{
+      border:none;
+      background:transparent;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:11px;
+      color:var(--text-muted);
+      cursor:pointer;
+      white-space:nowrap;
+      transition:all .15s ease;
+    }
+    #team-filter button.active{
+      background:#ffffff;
+      color:var(--accent-strong);
+      font-weight:600;
+      box-shadow:0 10px 24px rgba(15,23,42,0.16);
+    }
+
+    /* TEAM GRID */
+    #team-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+    }
+    .team-card{
+      background:var(--bg-panel);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-soft);
+      padding:10px 12px 10px;
+      font-size:12px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      transition:transform .15s ease,box-shadow .15s ease;
+    }
+    .team-card:hover{
+      transform:translateY(-3px);
+      box-shadow:0 20px 45px rgba(15,23,42,0.22);
+    }
+    .team-top{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .avatar-placeholder{
+      width:46px;
+      height:46px;
+      border-radius:18px;
+      background:radial-gradient(circle at top,#dbeafe,#a5b4fc);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#1d4ed8;
+      font-weight:700;
+      font-size:18px;
+      flex-shrink:0;
+      position:relative;
+      overflow:hidden;
+    }
+    .avatar-placeholder span{
+      position:relative;
+      z-index:2;
+    }
+    /* When you have real images later:
+       Replace inner span with <img src="..." alt="" class="avatar-img"> and adjust CSS. */
+
+    .team-info{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .team-name{
+      font-weight:600;
+      color:var(--accent-strong);
+      font-size:13px;
+    }
+    .team-role{
+      font-size:11px;
+      color:var(--accent-warm);
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+    }
+    .team-meta{
+      font-size:10px;
+      color:var(--text-muted);
+    }
+    .team-body{
+      color:var(--text-muted);
+      line-height:1.4;
+      margin-top:2px;
+    }
+    .team-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:5px;
+      margin-top:4px;
+      font-size:10px;
+    }
+    .team-tag{
+      padding:2px 6px;
+      border-radius:999px;
+      background:#f3f4ff;
+      color:var(--text-muted);
+    }
+
+    /* PARTNERS */
+    #partner-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+    }
+    .partner-card{
+      background:var(--bg-panel);
+      border-radius:var(--radius-md);
+      box-shadow:0 12px 32px rgba(15,23,42,0.16);
+      padding:10px 10px 9px;
+      font-size:11px;
+    }
+    .partner-title{
+      font-weight:600;
+      color:var(--accent-strong);
+      margin-bottom:3px;
+      font-size:12px;
+    }
+    .partner-body{
+      color:var(--text-muted);
+      line-height:1.4;
+    }
+
+    /* CONTACT */
+    #contact-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+      gap:18px;
+      align-items:flex-start;
+    }
+    #contact-card{
+      background:radial-gradient(circle at top left,#eff6ff 0%,#ffffff 60%);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-soft);
+      padding:12px 14px 12px;
+      font-size:12px;
+    }
+    #contact-title{
+      font-weight:600;
+      color:var(--accent-strong);
+      margin-bottom:4px;
+      font-size:13px;
+    }
+    #contact-body{
+      font-size:11px;
+      color:var(--text-muted);
+      margin-bottom:8px;
+    }
+    .contact-row{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      margin-bottom:8px;
+    }
+    .contact-label{
+      font-size:11px;
+      font-weight:600;
+      color:var(--text-muted);
+    }
+    .contact-input{
+      border-radius:999px;
+      border:1px solid #cbd5f0;
+      padding:6px 8px;
+      font-size:11px;
+      outline:none;
+      background:#ffffff;
+    }
+    .contact-textarea{
+      border-radius:10px;
+      border:1px solid #cbd5f0;
+      padding:6px 8px;
+      font-size:11px;
+      outline:none;
+      min-height:70px;
+      resize:vertical;
+      background:#ffffff;
+    }
+    #contact-footer{
+      font-size:10px;
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    #info-card{
+      background:var(--bg-panel);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-soft);
+      padding:12px 14px 12px;
+      font-size:11px;
+      color:var(--text-muted);
+    }
+    #info-card strong{color:var(--accent-strong);}
+    #info-list{
+      margin-top:6px;
+      padding-left:14px;
+    }
+    #info-list li{
+      margin-bottom:4px;
+    }
+
+    /* FOOTER */
+    #footer{
+      margin-top:24px;
+      padding-top:10px;
+      border-top:1px solid rgba(148,163,184,0.3);
+      font-size:10px;
+      color:var(--text-muted);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:980px){
+      #team-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+      #partner-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+      #contact-grid{
+        grid-template-columns:1fr;
+      }
+    }
+    @media (max-width:720px){
+      #nav-inner{flex-wrap:wrap;}
+      #nav-links{display:none;}
+      #team-grid,#partner-grid{
+        grid-template-columns:1fr;
+      }
+    }
+    @media (max-width:520px){
+      #wrapper{padding-inline:14px;}
+    }
+  
+
+/* μCytoD SHARED NAV+FOOTER v1 */
+:root{
+  --uc-accent: var(--accent, #0047ab);
+  --uc-accent2: var(--accent2, #00c6ff);
+  --uc-muted: var(--text-muted, var(--muted, #667085));
+}
+/* NAV */
+#nav{
+  position:fixed; top:0; z-index:80;
+  backdrop-filter:blur(14px);
+  background:rgba(245,248,255,0.90);
+  border-bottom:1px solid rgba(148,163,184,0.16);
+  left:0;
+  right:0;
+  width:100%;
+}
+#nav-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:10px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+#brand{display:flex;align-items:center;gap:10px; text-decoration:none;}
+#brand-logo{
+  width:30px;height:30px;border-radius:14px;
+  background:conic-gradient(from 210deg,#0047ab,#00c6ff,#22c55e,#ff9f43,#0047ab);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;font-size:14px;
+  box-shadow:0 10px 24px rgba(15,23,42,0.35);
+  flex:0 0 auto;
+}
+#brand-text{display:flex;flex-direction:column;line-height:1.15;}
+#brand-text span:first-child{
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:.08em;
+  text-transform:none; /* keep μCytoD™ exactly */
+  color:#052a67;
+}
+#brand-text .brand-sub{font-size:11px;color:var(--uc-muted);}
+#nav-links{display:flex;gap:10px;align-items:center;color:var(--uc-muted);font-size:13px;}
+#nav-links a{padding:6px 10px;border-radius:999px;transition:all .15s ease;}
+#nav-links a:hover{background:rgba(148,163,184,0.16);color:#052a67;}
+#nav-links a.active{background:#fff;color:#052a67;box-shadow:0 10px 24px rgba(15,23,42,0.16);font-weight:600;}
+#nav-cta{display:flex;gap:10px;align-items:center;}
+
+/* buttons (shared) */
+.btn{
+  border:none;border-radius:999px;
+  padding:8px 14px;font-size:12px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:transform .12s ease, box-shadow .12s ease, background .16s ease, color .16s ease;
+  white-space:nowrap;
+}
+.btn:active{transform:translateY(0px) scale(.99);}
+.btn-primary{
+  background:linear-gradient(135deg,var(--uc-accent),var(--uc-accent2));
+  color:#fff;font-weight:700;
+  box-shadow:0 12px 26px rgba(37,99,235,0.35);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 18px 40px rgba(37,99,235,0.45);}
+.btn-ghost{background:rgba(255,255,255,0.98);color:#052a67;border:1px solid rgba(148,163,184,0.52);}
+.btn-ghost:hover{background:#fff;}
+
+/* mobile */
+.nav-toggle{
+  display:none;
+  width:40px;height:40px;border-radius:999px;
+  border:1px solid rgba(148,163,184,0.52);
+  background:rgba(255,255,255,0.98);
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+.nav-toggle:hover{background:#fff;}
+.nav-toggle-bars{width:18px;height:2px;background:#052a67;position:relative;display:block;}
+.nav-toggle-bars:before,.nav-toggle-bars:after{content:"";position:absolute;left:0;width:18px;height:2px;background:#052a67;}
+.nav-toggle-bars:before{top:-6px;}
+.nav-toggle-bars:after{top:6px;}
+
+.nav-mobile{
+  display:none;
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 18px 12px;
+}
+.nav-mobile a{
+  display:block;
+  padding:10px 12px;
+  border-radius:14px;
+  color:#052a67;
+  background:rgba(255,255,255,0.75);
+  border:1px solid rgba(148,163,184,0.22);
+  margin-top:8px;
+}
+.nav-mobile a.active{background:#fff;box-shadow:0 10px 24px rgba(15,23,42,0.12);font-weight:700;}
+.nav-mobile-cta{display:flex;gap:10px;flex-wrap:wrap;padding:10px 0 2px;}
+#nav.is-open .nav-mobile{display:block;}
+
+@media (max-width:860px){
+  #nav-links{display:none;}
+  .nav-toggle{display:inline-flex;}
+}
+@media (max-width:520px){
+  #nav-inner{padding:10px 14px;}
+  .btn{padding:8px 12px;font-size:11px;}
+}
+
+/* FOOTER */
+#footer{
+  margin-top:24px;
+  padding-top:12px;
+  border-top:1px solid rgba(148,163,184,0.30);
+  color:var(--uc-muted);
+  font-size:10px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+#footer span{line-height:1.4;}
+/* end shared */
+
+    :target{scroll-margin-top:84px;}
+
+</style>
+</head>
+<body>
+  <!-- NAV (shared) -->
+  <div id="nav">
+    <div id="nav-inner">
+      <a id="brand" href="index.html" title="μCytoD™">
+        <div id="brand-logo">μC</div>
+        <div id="brand-text">
+          <span>μCytoD™</span>
+          <span class="brand-sub">non‑viral mechanoporation</span>
+        </div>
+      </a>
+
+      <nav id="nav-links" aria-label="Primary">
+        <a href="index.html" class="">Home</a>
+        <a href="data.html" class="">Data Explorer</a>
+        <a href="docs.html" class="">Protocols &amp; Publications</a>
+        <a href="team.html" class="active">Team</a>
+      </nav>
+
+      <div id="nav-cta">
+        <button class="btn btn-ghost" data-nav="data.html">Explore data</button>
+        <button class="btn btn-primary" data-nav="team.html#contact">Request quote <span aria-hidden="true">→</span></button>
+        <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-controls="nav-mobile" aria-expanded="false">
+          <span class="nav-toggle-bars" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+
+    <div id="nav-mobile" class="nav-mobile" aria-label="Mobile">
+      <a href="index.html" class="">Home</a>
+      <a href="data.html" class="">Data Explorer</a>
+      <a href="docs.html" class="">Protocols &amp; Publications</a>
+      <a href="team.html" class="active">Team</a>
+      <div class="nav-mobile-cta">
+        <button class="btn btn-ghost" data-nav="data.html">Explore data</button>
+        <button class="btn btn-primary" data-nav="team.html#contact">Request quote <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </div>
+<div id="wrapper">
+  <div id="page-header">
+    <div>
+      <div id="page-title">Scientific team, advisors &amp; partners</div>
+      <div id="page-subtitle">
+        μCytoD™ is developed by a multidisciplinary group of bioengineers, microfluidics experts and
+        translational partners. Use the filters to browse our core team and advisory board.
+      </div>
+    </div>
+    <div id="header-badge">Trusted by researchers</div>
+  </div>
+
+  <!-- TEAM -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">Core team</div>
+      <div class="section-subtitle">
+        Filter by focus area to see who to talk to about device engineering, applications, or
+        commercialization. Image cardholders below can be replaced with team photos.
+      </div>
+    </div>
+
+    <div id="team-filter">
+      <button data-role="all" class="active">All</button>
+      <button data-role="science">Science &amp; applications</button>
+      <button data-role="engineering">Engineering &amp; product</button>
+      <button data-role="business">Business &amp; partnerships</button>
+    </div>
+
+    <div id="team-grid">
+      <div class="team-card" data-role="science">
+        <div class="team-top">
+          <div class="avatar-placeholder">
+            <span>PS</span>
+          </div>
+          <div class="team-info">
+            <div class="team-name">Dr. Ye Ai</div>
+            <div class="team-role">Chief Scientific Advisor</div>
+            <div class="team-meta">Microfluidics</div>
+          </div>
+        </div>
+        <div class="team-body">
+          Dr. Ye Ai is an Associate Professor at the Singapore University of Technology and Design (SUTD) with over 16 years of research experience in microfluidic technologies for cell analysis and manipulation. His work focuses on developing low-cost, field-deployable lab-on-a-chip devices. He is also the Scientific Founder of CellWave Tech, a company commercializing innovative cell sorting technology.
+        </div>
+        <div class="team-tags">
+          <div class="team-tag">Single Cell Analysis</div>
+          <div class="team-tag">Mechanobiology</div>
+        </div>
+      </div>
+
+      <div class="team-card" data-role="engineering">
+        <div class="team-top">
+          <div class="avatar-placeholder">
+            <span>EN</span>
+          </div>
+          <div class="team-info">
+            <div class="team-name">Dr. Qiang Zhao</div>
+            <div class="team-role">CTO</div>
+            <div class="team-meta">Microfluidics . Mechanoporation</div>
+          </div>
+        </div>
+        <div class="team-body">
+          Dr. Qiang Zhao is a Research Fellow at the Singapore University of Technology and Design (SUTD) with 10 years of research experience in microfabrication and microfluidics.
+        </div>
+        <div class="team-tags">
+          <div class="team-tag">Device design</div>
+          <div class="team-tag">Scale-up</div>
+        </div>
+      </div>
+
+      <div class="team-card" data-role="business">
+        <div class="team-top">
+          <div class="avatar-placeholder">
+            <span>BM</span>
+          </div>
+          <div class="team-info">
+            <div class="team-name">Partha Pratim Sarkar</div>
+            <div class="team-role">Commercial Lead</div>
+            <div class="team-meta">Microfluidics . Mechanoporation . Business Development</div>
+          </div>
+        </div>
+        <div class="team-body">
+          Partha Pratim Sarkar is a Ph.D. candidate in Biomedical Engineering at SUTD, specializing in microfluidics, lab-on-a-chip, single-cell analysis, and biosensors under the supervision of Prof. Dr. Ye Ai. He holds a B.Sc. in Electronics and Communication Engineering from the National University of Bangladesh. Partha is a student member and brand ambassador for IEEE and an award-winning innovator, having secured the IEEE YESIST12 Innovation Challenge 2021 and the SUTD 3MT Winner, People's Choice, and Most Positive Social Impact awards (EPD ARC 2025, SUTD).
+        </div>
+        <div class="team-tags">
+          <div class="team-tag">Market validation</div>
+          <div class="team-tag">Product Design</div>
+          <div class="team-tag">Scale-up</div>
+        </div>
+      </div>
+
+      <div class="team-card" data-role="engineering">
+        <div class="team-top">
+          <div class="avatar-placeholder">
+            <span>DF</span>
+          </div>
+          <div class="team-info">
+            <div class="team-name">Jing Hui Low</div>
+            <div class="team-role">Microfluidics Engineer</div>
+            <div class="team-meta">PEO rheology · Flow control · CFD</div>
+          </div>
+        </div>
+        <div class="team-body">
+          Jing Hui Low holds a Bachelor's degree in Physics from the National University of Singapore. Her work focuses on optimizing viscoelastic formulations, flow windows, and cartridge geometries by employing a combined experimental and simulation approach.
+        </div>
+        <div class="team-tags">
+          <div class="team-tag">Rheology</div>
+          <div class="team-tag">Simulation</div>
+        </div>
+      </div>
+
+      <div class="team-card" data-role="business">
+        <div class="team-top">
+          <div class="avatar-placeholder">
+            <span>SP</span>
+          </div>
+          <div class="team-info">
+            <div class="team-name">Dr. Anthony Chua</div>
+            <div class="team-role">Industry Mentor</div>
+            <div class="team-meta">Mentorship</div>
+          </div>
+        </div>
+        <div class="team-body">
+          Anthony holds a Ph.D. in Virology from NUS and received high-tech entrepreneurship training from the University of Pennsylvania and INSEAD. Since 2006, he has been deeply involved in the BioTech/MedTech startup ecosystem and tech transfer globally, contributing to the successful acquisitions of Protez Pharmaceuticals (by Novartis) and SGAustria (by PharmaCyte Biotech). He also played a key role in attracting Fujitsu Laboratories to establish their first BioTech research facility in Singapore.
+        </div>
+        <div class="team-tags">
+          <div class="team-tag">Mentorship</div> 
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARTNERS -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">Academic &amp; translational partners</div>
+      <div class="section-subtitle">
+        μCytoD™ is being evaluated in collaboration with academic labs and translational groups
+        working on immunotherapy, gene editing and nanoparticle delivery.
+      </div>
+    </div>
+    <div id="partner-grid">
+      <div class="partner-card">
+        <div class="partner-title">Immunotherapy group (demo)</div>
+        <div class="partner-body">
+          Running pilot studies on CAR-T and NK cell engineering using μCytoD™ for non-viral delivery
+          of mRNA and CRISPR RNPs.
+        </div>
+      </div>
+      <div class="partner-card">
+        <div class="partner-title">Gene editing consortium (demo)</div>
+        <div class="partner-body">
+          Benchmarking editing outcomes and off-target profiles in multiple cell types, comparing
+          μCytoD™ with leading electroporation systems.
+        </div>
+      </div>
+      <div class="partner-card">
+        <div class="partner-title">Nanomedicine lab (demo)</div>
+        <div class="partner-body">
+          Exploring nanoparticle-mediated drug delivery using mechanoporation to access otherwise
+          refractory intracellular targets.
+        </div>
+      </div>
+    </div>
+  </section>
+
+   <!-- CONTACT -->
+  <section id="contact" class="section">
+    <div class="section-header">
+      <div class="section-title">Contact us / request a quote</div>
+      <div class="section-subtitle">
+        Share a brief description of your cell type, cargo and desired throughput. We will map your
+        use-case to a recommended μCytoD™ configuration and data package.
+      </div>
+    </div>
+
+    <div id="contact-grid">
+      <div id="contact-card">
+        <div id="contact-title">Start a conversation with our team</div>
+        <div id="contact-body">
+          We typically respond within 2–3 business days with datasheets, pricing and demo availability.
+          For collaborations, please include any timelines or grant constraints.
+          <br><br>
+          You can also reach us directly at
+          <a href="mailto:partha@sutd.edu.sg">partha@sutd.edu.sg</a>.
+        </div>
+
+        <form onsubmit="event.preventDefault(); alert('Thank you! Our team will follow up by email from partha@sutd.edu.sg.');">
+          <div class="contact-row">
+            <div class="contact-label">Name &amp; affiliation</div>
+            <input class="contact-input" type="text" placeholder="e.g., Dr. Jane Doe, XYZ University" required />
+          </div>
+          <div class="contact-row">
+            <div class="contact-label">Email</div>
+            <input class="contact-input" type="email" placeholder="name@institute.edu" required />
+          </div>
+          <div class="contact-row">
+            <div class="contact-label">Cell type(s) &amp; cargo(s)</div>
+            <input class="contact-input" type="text" placeholder="e.g., primary T cells, NK cells, mRNA, CRISPR RNP" />
+          </div>
+          <div class="contact-row">
+            <div class="contact-label">Throughput &amp; project goals</div>
+            <textarea class="contact-textarea" placeholder="Briefly describe your experiment volume, target efficiency/viability, and current delivery method."></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">
+            Submit inquiry
+          </button>
+          <div id="contact-footer">
+            We treat all project information as confidential and can sign an NDA upon request.
+            <br>
+            For urgent queries, email us at
+            <a href="mailto:partha@sutd.edu.sg">partha@sutd.edu.sg</a>.
+          </div>
+        </form>
+      </div>
+
+
+      <div id="info-card">
+        <strong>How we usually support new users</strong>
+        <ul id="info-list">
+          <li>Initial call to understand your biology, cells and delivery goals.</li>
+          <li>Mapping to μCytoD™ cartridges, PEO buffers and recommended flow settings.</li>
+          <li>Optional on-site or remote training session for your team.</li>
+          <li>Follow-up review of your early data and suggestions for further tuning.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+    <!-- FOOTER (shared) -->
+  <div id="footer" role="contentinfo">
+    <span>© <span id="uc-year"></span> μCytoD™</span>
+    <span>Non‑viral intracellular delivery • Data shown for benchmarking; results may vary.</span>
+  </div>
+
+</div>
+
+<script>
+  // Team filter logic
+  const filterButtons = document.querySelectorAll('#team-filter button');
+  const teamCards = document.querySelectorAll('.team-card');
+
+  function setRoleFilter(role){
+    filterButtons.forEach(btn=>{
+      btn.classList.toggle('active', btn.dataset.role === role);
+    });
+    teamCards.forEach(card=>{
+      const r = card.getAttribute('data-role');
+      card.style.display = (role === 'all' || r === role) ? 'flex' : 'none';
+    });
+  }
+
+  filterButtons.forEach(btn=>{
+    btn.addEventListener('click',()=> setRoleFilter(btn.dataset.role));
+  });
+
+  // Default
+  setRoleFilter('all');
+</script>
+<script id="uc-shared-script">
+(function(){
+  // nav buttons
+  document.querySelectorAll('[data-nav]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var href = btn.getAttribute('data-nav');
+      if(href) location.href = href;
+    });
+  });
+
+  // mobile menu toggle
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('nav-toggle');
+  var mobile = document.getElementById('nav-mobile');
+
+  function closeMenu(){
+    if(!nav) return;
+    nav.classList.remove('is-open');
+    if(toggle) toggle.setAttribute('aria-expanded','false');
+  }
+
+  if(toggle && nav){
+    toggle.addEventListener('click', function(){
+      var open = nav.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  if(mobile){
+    mobile.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', closeMenu);
+    });
+  }
+
+  // year
+  var y = document.getElementById('uc-year');
+  if(y) y.textContent = new Date().getFullYear();
+
+  // close on escape
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeMenu();
+  });
+
+  // close on outside click
+  document.addEventListener('click', function(e){
+    if(!nav || !nav.classList.contains('is-open')) return;
+    if(!nav.contains(e.target)) closeMenu();
+  });
+})();
+</script>
+</body>
+</html>

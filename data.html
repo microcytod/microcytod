@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>μCytoD™ Data Explorer – Intracellular Delivery Performance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Font & D3 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson-client@3"></script>
+  <style>
+    :root{
+      --bg:#f4f7ff;
+      --bg-panel:#ffffff;
+      --accent:#0047ab;
+      --accent-soft:#e0ebff;
+      --accent-strong:#062655;
+      --text-main:#111827;
+      --text-muted:#6b7280;
+      --shadow-soft:0 14px 40px rgba(15,23,42,0.12);
+      --radius-lg:18px;
+      --radius-md:12px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    body{
+      font-family:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top left,#e3efff 0%,#fdfdff 35%,#f8f1ff 100%);
+      color:var(--text-main);
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+    }
+
+    /* NAV */
+    #nav{
+      position:fixed;
+      top:0;
+      z-index:80;
+      backdrop-filter:blur(16px);
+      background:linear-gradient(to bottom,rgba(248,250,252,0.92),rgba(248,250,252,0.75));
+      border-bottom:1px solid rgba(148,163,184,0.25);
+      left:0;
+  right:0;
+  width:100%;
+}
+    #nav-inner{
+      max-width:1200px;
+      margin:0 auto;
+      padding:10px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+    #brand{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    #brand-logo{
+      width:32px;
+      height:32px;
+      border-radius:999px;
+      background:radial-gradient(circle at 30% 20%,#c7d2fe 0,#1d4ed8 55%,#0f172a 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#e5edff;
+      font-weight:800;
+      font-size:16px;
+      box-shadow:0 10px 20px rgba(15,23,42,0.35);
+    }
+    #brand-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+    }
+  #brand-text span:first-child{
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:.08em;
+  text-transform:none;   /* <- keep μCytoD™ exactly */
+  color:#052a67;
+}
+    #brand-text span:last-child{
+      font-size:11px;
+      color:var(--text-muted);
+    }
+
+    #nav-links{
+      display:flex;
+      gap:14px;
+      font-size:12px;
+    }
+    #nav-links a{
+      padding:6px 10px;
+      border-radius:999px;
+      color:var(--text-muted);
+    }
+    #nav-links a.active{
+      background:var(--accent-soft);
+      color:var(--accent-strong);
+      font-weight:600;
+    }
+
+    #nav-cta{
+      display:flex;
+      gap:8px;
+    }
+
+    .btn{
+      font-family:inherit;
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      padding:7px 14px;
+      font-size:11px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      transition:all 0.15s ease;
+      white-space:nowrap;
+    }
+    .btn-ghost{
+      background:rgba(255,255,255,0.9);
+      color:var(--accent-strong);
+      border:1px solid rgba(148,163,184,0.6);
+    }
+    .btn-ghost:hover{
+      background:#f1f6ff;
+      transform:translateY(-0.5px);
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,#0047ab,#00c6ff);
+      color:#ffffff;
+      box-shadow:0 12px 26px rgba(37,99,235,0.35);
+      font-weight:600;
+    }
+    .btn-primary:hover{
+      transform:translateY(-1px);
+      box-shadow:0 18px 40px rgba(37,99,235,0.45);
+    }
+
+    /* WRAPPER */
+    #wrapper{
+      max-width:1200px;
+      margin:0 auto;
+      padding:24px 18px 40px;
+    }
+
+    /* HEADER */
+    #page-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:18px;
+      margin-bottom:16px;
+    }
+    #page-title{
+      font-size:22px;
+      font-weight:700;
+      color:var(--accent-strong);
+    }
+    #page-subtitle{
+      font-size:13px;
+      color:var(--text-muted);
+      max-width:620px;
+      margin-top:4px;
+      line-height:1.55;
+    }
+    #page-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:10px;
+      font-size:10px;
+    }
+    .pill{
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(15,23,42,0.04);
+      color:var(--text-muted);
+      border:1px dashed rgba(148,163,184,0.6);
+    }
+
+    /* LAYOUT */
+    #data-layout{
+      display:grid;
+      grid-template-columns:0.95fr 1.35fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    #controls-panel{
+      background:var(--bg-panel);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-soft);
+      padding:16px 16px 14px;
+      font-size:12px;
+    }
+    #controls-title{
+      font-size:13px;
+      font-weight:600;
+      color:var(--accent-strong);
+      margin-bottom:4px;
+    }
+    #controls-subtitle{
+      font-size:11px;
+      color:var(--text-muted);
+      margin-bottom:10px;
+      line-height:1.4;
+    }
+
+    .control-group{
+      margin-bottom:10px;
+    }
+    .control-label{
+      font-size:11px;
+      color:var(--text-muted);
+      margin-bottom:4px;
+    }
+
+    select{
+      width:100%;
+      padding:6px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.8);
+      font-size:11px;
+      font-family:inherit;
+      background:#f9fbff;
+      color:var(--text-main);
+    }
+
+    /* group + dataset buttons */
+    #group-buttons,
+    #dataset-buttons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      padding:2px 0;
+    }
+    .dataset-btn,
+    .group-btn{
+      font-size:10px;
+      padding:4px 9px;
+    }
+    .dataset-btn.active,
+    .group-btn.active{
+      background:var(--accent-soft);
+      color:var(--accent-strong);
+      border-color:rgba(37,99,235,0.85);
+      font-weight:600;
+    }
+
+    #quick-stats{
+      margin-top:10px;
+      padding-top:10px;
+      border-top:1px dashed rgba(148,163,184,0.5);
+      font-size:11px;
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:6px;
+    }
+    .stat-label{
+      color:var(--text-muted);
+    }
+    .stat-value{
+      font-weight:600;
+      color:var(--accent-strong);
+    }
+
+    #chart-panel{
+      position:relative;
+      background:var(--bg-panel);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-soft);
+      padding:14px 16px 18px;
+      min-height:280px;
+    }
+    #chart-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+      margin-bottom:4px;
+    }
+    #chart-header-main{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    #chart-title{
+      font-size:14px;
+      font-weight:600;
+      color:var(--accent-strong);
+    }
+    #chart-subtitle{
+      font-size:11px;
+      color:var(--text-muted);
+    }
+
+    #chart-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      font-size:10px;
+      justify-content:flex-end;
+    }
+    #chart-badges span{
+      padding:4px 7px;
+      border-radius:999px;
+      background:#eff6ff;
+      color:#1d4ed8;
+      border:1px solid rgba(129,140,248,0.4);
+    }
+
+    #chart-area{
+      margin-top:4px;
+      position:relative;
+    }
+
+    #main-chart{
+      width:100%;
+      height:260px;
+      display:block;
+    }
+
+    /* Axis titles */
+    .axis-title{
+      font-size:13px;
+      fill:#334155;
+      font-weight:600;
+    }
+
+    /* Bars */
+    .bar{
+      cursor:pointer;
+    }
+
+    /* Performance tooltip */
+    #performance-tooltip{
+      position:absolute;
+      padding:8px 10px;
+      background:#ffffff;
+      border-radius:10px;
+      border:1px solid #dbe3f5;
+      box-shadow:0 10px 25px rgba(15,23,42,0.22);
+      font-size:11px;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity 0.15s ease;
+      z-index:10;
+      color:var(--text-main);
+      max-width:260px;
+    }
+
+    /* DEMOGRAPHICS SECTION */
+    #demographics-section{
+      margin-top:32px;
+    }
+
+    #demo-header-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      margin-bottom:14px;
+    }
+
+    #demo-title{
+      font-size:18px;
+      font-weight:700;
+      color:var(--accent-strong);
+    }
+
+    #demo-subtitle{
+      font-size:12px;
+      color:var(--text-muted);
+      max-width:620px;
+      line-height:1.5;
+    }
+
+    #demo-badge{
+      font-size:11px;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#fee2e2;
+      color:#b91c1c;
+      font-weight:600;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+
+    #demographics-grid{
+      display:grid;
+      grid-template-columns:1.15fr 1fr;
+      gap:16px;
+      align-items:stretch;
+    }
+
+    #map-panel,
+    #area-panel{
+      background:var(--bg-panel);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-soft);
+      padding:14px 16px 16px;
+      font-size:12px;
+    }
+
+    
+    /* Ensure map sits centered within the card */
+    #map-panel{
+      display:flex;
+      flex-direction:column;
+    }
+    #map-container{
+      flex:1;
+      min-height:360px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+.panel-header-title{
+      font-size:13px;
+      font-weight:600;
+      color:var(--accent-strong);
+      margin-bottom:2px;
+    }
+
+    .panel-header-subtitle{
+      font-size:11px;
+      color:var(--text-muted);
+      margin-bottom:10px;
+    }
+
+    /* Choropleth map */
+    #map-container{
+      position:relative;
+      width:100%;
+      overflow:hidden;
+      border-radius:var(--radius-md);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    #choropleth{
+      display:block;
+      width:100%;
+      height:360px;
+      margin:0 auto;
+      border-radius:var(--radius-md);
+      background:#f1f6ff;
+      border:1px solid rgba(148,163,184,0.35);
+      cursor:grab;
+    }
+
+    #map-tooltip{
+      position:absolute;
+      padding:8px 10px;
+      background:#ffffff;
+      border-radius:10px;
+      border:1px solid #dbe3f5;
+      box-shadow:0 10px 25px rgba(15,23,42,0.22);
+      font-size:11px;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity 0.15s ease;
+      z-index:10;
+      color:var(--text-main);
+      max-width:220px;
+    }
+
+    .map-country{
+      cursor:pointer;
+      transition:fill 0.12s ease, transform 0.12s ease;
+      vector-effect:non-scaling-stroke;
+      shape-rendering:geometricPrecision;
+    }
+
+    .map-country:hover{
+      transform:translateY(-0.5px);
+    }
+
+    .map-legend-group text{
+      font-size:11px;
+      fill:var(--text-muted);
+    }
+
+    /* Area + country charts */
+    #area-layout{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    #area-donut-wrap,
+    #country-bar-wrap{
+      position:relative;
+    }
+
+    #area-svg{
+      display:block;
+    }
+
+    #country-bar-svg{
+      display:block;
+    }
+
+    #area-tooltip{
+      position:absolute;
+      padding:7px 9px;
+      background:#ffffff;
+      border-radius:10px;
+      border:1px solid #dbe3f5;
+      box-shadow:0 10px 25px rgba(15,23,42,0.22);
+      font-size:11px;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity 0.15s ease;
+      z-index:10;
+      color:var(--text-main);
+      max-width:220px;
+    }
+
+    #country-bar-tooltip{
+      position:absolute;
+      padding:7px 9px;
+      background:#ffffff;
+      border-radius:10px;
+      border:1px solid #dbe3f5;
+      box-shadow:0 10px 25px rgba(15,23,42,0.22);
+      font-size:11px;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity 0.15s ease;
+      z-index:10;
+      color:var(--text-main);
+      max-width:220px;
+    }
+
+    .mini-title{
+      font-size:12px;
+      font-weight:600;
+      color:var(--text-muted);
+      margin-bottom:4px;
+    }
+
+    .country-bar-value{
+      font-size:11px;
+      fill:var(--accent-strong);
+    }
+
+    #region-pills button.active{
+      background:rgba(0,71,171,0.08);
+      border-color:rgba(37,99,235,0.7);
+    }
+
+    /* FOOTER */
+    #footer{
+      margin-top:26px;
+      font-size:10px;
+      color:var(--text-muted);
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      justify-content:space-between;
+    }
+
+    @media (max-width:980px){
+      #data-layout{
+        grid-template-columns:1fr;
+      }
+      #chart-panel{
+        order:-1;
+      }
+      #demographics-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width:720px){
+      #nav-inner{flex-wrap:wrap;}
+      #nav-links{display:none;}
+    }
+
+    @media (max-width:520px){
+      #wrapper{padding-inline:14px;}
+      #page-header{flex-direction:column;}
+      #demo-header-row{flex-direction:column;}
+    }
+  
+
+/* μCytoD SHARED NAV+FOOTER v1 */
+:root{
+  --uc-accent: var(--accent, #0047ab);
+  --uc-accent2: var(--accent2, #00c6ff);
+  --uc-muted: var(--text-muted, var(--muted, #667085));
+}
+/* NAV */
+#nav{
+  position:fixed; top:0; z-index:80;
+  backdrop-filter:blur(14px);
+  background:rgba(245,248,255,0.90);
+  border-bottom:1px solid rgba(148,163,184,0.16);
+  left:0;
+  right:0;
+  width:100%;
+}
+#nav-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:10px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+#brand{display:flex;align-items:center;gap:10px; text-decoration:none;}
+#brand-logo{
+  width:30px;height:30px;border-radius:14px;
+  background:conic-gradient(from 210deg,#0047ab,#00c6ff,#22c55e,#ff9f43,#0047ab);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;font-size:14px;
+  box-shadow:0 10px 24px rgba(15,23,42,0.35);
+  flex:0 0 auto;
+}
+#brand-text{display:flex;flex-direction:column;line-height:1.15;}
+#brand-text span:first-child{
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:.08em;
+  text-transform:none; /* keep μCytoD™ exactly */
+  color:#052a67;
+}
+#brand-text .brand-sub{font-size:11px;color:var(--uc-muted);}
+#nav-links{display:flex;gap:10px;align-items:center;color:var(--uc-muted);font-size:13px;}
+#nav-links a{padding:6px 10px;border-radius:999px;transition:all .15s ease;}
+#nav-links a:hover{background:rgba(148,163,184,0.16);color:#052a67;}
+#nav-links a.active{background:#fff;color:#052a67;box-shadow:0 10px 24px rgba(15,23,42,0.16);font-weight:600;}
+#nav-cta{display:flex;gap:10px;align-items:center;}
+
+/* buttons (shared) */
+.btn{
+  border:none;border-radius:999px;
+  padding:8px 14px;font-size:12px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:transform .12s ease, box-shadow .12s ease, background .16s ease, color .16s ease;
+  white-space:nowrap;
+}
+.btn:active{transform:translateY(0px) scale(.99);}
+.btn-primary{
+  background:linear-gradient(135deg,var(--uc-accent),var(--uc-accent2));
+  color:#fff;font-weight:700;
+  box-shadow:0 12px 26px rgba(37,99,235,0.35);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 18px 40px rgba(37,99,235,0.45);}
+.btn-ghost{background:rgba(255,255,255,0.98);color:#052a67;border:1px solid rgba(148,163,184,0.52);}
+.btn-ghost:hover{background:#fff;}
+
+/* mobile */
+.nav-toggle{
+  display:none;
+  width:40px;height:40px;border-radius:999px;
+  border:1px solid rgba(148,163,184,0.52);
+  background:rgba(255,255,255,0.98);
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+.nav-toggle:hover{background:#fff;}
+.nav-toggle-bars{width:18px;height:2px;background:#052a67;position:relative;display:block;}
+.nav-toggle-bars:before,.nav-toggle-bars:after{content:"";position:absolute;left:0;width:18px;height:2px;background:#052a67;}
+.nav-toggle-bars:before{top:-6px;}
+.nav-toggle-bars:after{top:6px;}
+
+.nav-mobile{
+  display:none;
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 18px 12px;
+}
+.nav-mobile a{
+  display:block;
+  padding:10px 12px;
+  border-radius:14px;
+  color:#052a67;
+  background:rgba(255,255,255,0.75);
+  border:1px solid rgba(148,163,184,0.22);
+  margin-top:8px;
+}
+.nav-mobile a.active{background:#fff;box-shadow:0 10px 24px rgba(15,23,42,0.12);font-weight:700;}
+.nav-mobile-cta{display:flex;gap:10px;flex-wrap:wrap;padding:10px 0 2px;}
+#nav.is-open .nav-mobile{display:block;}
+
+@media (max-width:860px){
+  #nav-links{display:none;}
+  .nav-toggle{display:inline-flex;}
+}
+@media (max-width:520px){
+  #nav-inner{padding:10px 14px;}
+  .btn{padding:8px 12px;font-size:11px;}
+}
+
+/* FOOTER */
+#footer{
+  margin-top:24px;
+  padding-top:12px;
+  border-top:1px solid rgba(148,163,184,0.30);
+  color:var(--uc-muted);
+  font-size:10px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+#footer span{line-height:1.4;}
+/* end shared */
+
+    body{padding-top:72px;}
+
+
+    :target{scroll-margin-top:84px;}
+
+</style>
+</head>
+<body>
+  <!-- NAV (shared) -->
+  <div id="nav">
+    <div id="nav-inner">
+      <a id="brand" href="index.html" title="μCytoD™">
+        <div id="brand-logo">μC</div>
+        <div id="brand-text">
+          <span>μCytoD™</span>
+          <span class="brand-sub">non‑viral mechanoporation</span>
+        </div>
+      </a>
+
+      <nav id="nav-links" aria-label="Primary">
+        <a href="index.html" class="">Home</a>
+        <a href="data.html" class="active">Data Explorer</a>
+        <a href="docs.html" class="">Protocols &amp; Publications</a>
+        <a href="team.html" class="">Team</a>
+      </nav>
+
+      <div id="nav-cta">
+        <button class="btn btn-ghost" data-nav="data.html">Explore data</button>
+        <button class="btn btn-primary" data-nav="team.html#contact">Request quote <span aria-hidden="true">→</span></button>
+        <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-controls="nav-mobile" aria-expanded="false">
+          <span class="nav-toggle-bars" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+
+    <div id="nav-mobile" class="nav-mobile" aria-label="Mobile">
+      <a href="index.html" class="">Home</a>
+      <a href="data.html" class="active">Data Explorer</a>
+      <a href="docs.html" class="">Protocols &amp; Publications</a>
+      <a href="team.html" class="">Team</a>
+      <div class="nav-mobile-cta">
+        <button class="btn btn-ghost" data-nav="data.html">Explore data</button>
+        <button class="btn btn-primary" data-nav="team.html#contact">Request quote <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </div>
+<div id="wrapper">
+  <header id="page-header">
+    <div>
+      <div id="page-title">Intracellular delivery performance · interactive benchmark</div>
+      <p id="page-subtitle">
+        Explore μCytoD™ delivery efficiency, viability and recovery across operating windows.
+      </p>
+      <div id="page-badges">
+        <span class="pill">Non-viral mechanoporation</span>
+        <span class="pill">High efficacy</span>
+        <span class="pill">Market validation: 352 scientists</span>
+      </div>
+    </div>
+  </header>
+
+  <div id="data-layout">
+    <!-- Controls panel -->
+    <aside id="controls-panel">
+      <div id="controls-title">Configure the benchmark view</div>
+      <div id="controls-subtitle">
+        First choose a product view (operating window, cargo &amp; cell line, or method comparison), then pick the metric.
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">View (combine related figures)</div>
+        <div id="group-buttons"></div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">Metric within view (figure)</div>
+        <div id="dataset-buttons"></div>
+      </div>
+
+      <div id="quick-stats">
+        <div>
+          <div class="stat-label">Best condition</div>
+          <div class="stat-value" id="stat-best"></div>
+        </div>
+        <div>
+          <div class="stat-label">Spread (max – min)</div>
+          <div class="stat-value" id="stat-spread"></div>
+        </div>
+        <div>
+          <div class="stat-label">Average</div>
+          <div class="stat-value" id="stat-avg"></div>
+        </div>
+        <div>
+          <div class="stat-label">n (conditions)</div>
+          <div class="stat-value" id="stat-n"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Chart panel -->
+    <section id="chart-panel">
+      <div id="chart-header">
+        <div id="chart-header-main">
+          <div id="chart-title">Delivery profile across μCytoD™ conditions</div>
+          <div id="chart-subtitle">Hover bars to read exact values.</div>
+        </div>
+        <div id="chart-badges">
+          <span>Jurkat / MDA-MB-231 · Molecules/ mRNA</span>
+          <span>Viscoelastic mechanoporation</span>
+        </div>
+      </div>
+
+      <div id="chart-area">
+        <svg id="main-chart"></svg>
+        <div id="performance-tooltip"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- DEMOGRAPHICS & CONTACTS (UNCHANGED TEXT) -->
+  <section id="demographics-section">
+    <div id="demo-header-row">
+      <div>
+        <div id="demo-title">Global outreach &amp; customer demographics</div>
+      </div>
+      <div id="demo-badge">Market validation · 352 contacts</div>
+    </div>
+
+    <div id="demographics-grid">
+      <!-- Left: Choropleth world map -->
+      <div id="map-panel">
+        <div class="panel-header-title">World map of potential μCytoD™ users</div>
+        <div class="panel-header-subtitle">
+          Countries are shaded by contacts on a fixed global scale. Hover for counts; click a country to switch region. Scroll or drag to zoom and pan.
+        </div>
+        <div id="map-container">
+          <svg id="choropleth" width="100%" height="360"></svg>
+          <div id="map-tooltip"></div>
+        </div>
+      </div>
+
+      <!-- Right: Scientific area + top countries -->
+      <div id="area-panel">
+        <div class="panel-header-title">Scientific area landscape</div>
+        <div class="panel-header-subtitle">
+          Contacts grouped by scientific background (gene editing, cell / immunotherapy, nanomedicine, RNA, etc.).
+        </div>
+
+        <div id="area-layout">
+          <div id="area-donut-wrap">
+            <div class="mini-title">Primary background · donut map (<span id="area-region-label">Global</span>)</div>
+            <svg id="area-svg" width="100%" height="260"></svg>
+            <div id="area-tooltip"></div>
+          </div>
+
+          <div id="country-bar-wrap">
+            <div class="mini-title">Top countries by outreach (<span id="country-region-label">Global</span>)</div>
+            <svg id="country-bar-svg" width="100%" height="180"></svg>
+            <div id="country-bar-tooltip"></div>
+          </div>
+
+          <div id="region-pills" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;font-size:10px;">
+            <button type="button" class="btn btn-ghost" data-region="Global">Global</button>
+            <button type="button" class="btn btn-ghost" data-region="Asia">Asia</button>
+            <button type="button" class="btn btn-ghost" data-region="Europe">Europe</button>
+            <button type="button" class="btn btn-ghost" data-region="North America">North America</button>
+            <button type="button" class="btn btn-ghost" data-region="Oceania">Oceania</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- FOOTER (shared) -->
+  <div id="footer" role="contentinfo">
+    <span>© <span id="uc-year"></span> μCytoD™</span>
+    <span>Non‑viral intracellular delivery • Data shown for benchmarking; results may vary.</span>
+  </div>
+
+</div>
+
+<script>
+/*
+  PERFORMANCE DATA – from filter_delivery_data_fig2_3_4_with_names.xlsx
+*/
+const intracellularDatasets = [
+  {
+    id: "figure2a",
+    groupId: "flow",
+    groupLabel: "Operating window · Flow rate",
+    metricLabel: "Delivery efficiency vs flow rate",
+    title: "Delivery Efficiency vs Flow Rate",
+    xLabel: "Flow Rate (mL/min)",
+    yLabel: "Delivery Efficiency (%)",
+    unit: "%",
+    series: [
+      { category: "1",  value: 92,  label: "1 mL/min" },
+      { category: "2",  value: 97.5, label: "2 mL/min" },
+      { category: "5",  value: 98, label: "5 mL/min" },
+      { category: "10", value: 96, label: "10 mL/min" },
+      { category: "15", value: 94, label: "15 mL/min" }
+    ]
+  },
+  {
+    id: "figure2b",
+    groupId: "flow",
+    groupLabel: "Operating window · Flow rate",
+    metricLabel: "MFI fold vs flow rate",
+    title: "MFI Fold vs Flow Rate",
+    xLabel: "Flow Rate (mL/min)",
+    yLabel: "MFI Fold Increase",
+    unit: "AU",
+    series: [
+      { category: "1",  value: 8, label: "1 mL/min" },
+      { category: "2",  value: 42, label: "2 mL/min" },
+      { category: "5",  value: 50, label: "5 mL/min" },
+      { category: "10", value: 75, label: "10 mL/min" },
+      { category: "15", value: 82, label: "15 mL/min" }
+    ]
+  },
+  {
+    id: "figure2c",
+    groupId: "peo",
+    groupLabel: "Operating window · Polymer (PEO)",
+    metricLabel: "Delivery efficiency vs PEO concentration",
+    title: "Delivery Efficiency vs PEO Concentration",
+    xLabel: "PEO (mg/mL)",
+    yLabel: "Efficiency (%)",
+    unit: "%",
+    series: [
+      { category: "0.5", value: 93 },
+      { category: "1",   value: 97.5 },
+      { category: "2",   value: 97.5 },
+      { category: "5",   value: 99 },
+      { category: "10",  value: 97 },
+      { category: "20",  value: 96 }
+    ]
+  },
+  {
+    id: "figure2d",
+    groupId: "peo",
+    groupLabel: "Operating window · Polymer (PEO)",
+    metricLabel: "MFI fold vs PEO concentration",
+    title: "MFI Fold vs PEO Concentration",
+    xLabel: "PEO (mg/mL)",
+    yLabel: "MFI Fold",
+    unit: "AU",
+    series: [
+      { category: "0.5", value: 14 },
+      { category: "1",   value: 18 },
+      { category: "2",   value: 22.5 },
+      { category: "5",   value: 27 },
+      { category: "10",  value: 36 },
+      { category: "20",  value: 45 }
+    ]
+  },
+  {
+    id: "figure2e",
+    groupId: "aperture",
+    groupLabel: "Operating window · Aperture size",
+    metricLabel: "Delivery efficiency vs aperture",
+    title: "Delivery Efficiency vs Aperture Size",
+    xLabel: "Aperture (µm)",
+    yLabel: "Efficiency (%)",
+    unit: "%",
+    series: [
+      { category: "12", value: 93.0 },
+      { category: "16", value: 97.5 },
+      { category: "20", value: 92.5 },
+      { category: "25", value: 87.0 }
+    ]
+  },
+  {
+    id: "figure2f",
+    groupId: "aperture",
+    groupLabel: "Operating window · Aperture size",
+    metricLabel: "MFI fold vs aperture",
+    title: "MFI Fold vs Aperture Size",
+    xLabel: "Aperture (µm)",
+    yLabel: "MFI Fold",
+    unit: "AU",
+    series: [
+      { category: "12", value: 17 },
+      { category: "16", value: 16 },
+      { category: "20", value: 10 },
+      { category: "25", value: 7 }
+    ]
+  },
+  {
+    id: "figure2g",
+    groupId: "filters",
+    groupLabel: "Operating window · Filter count",
+    metricLabel: "Delivery efficiency vs filter number",
+    title: "Delivery Efficiency vs Filter Number",
+    xLabel: "Filter Count",
+    yLabel: "Efficiency (%)",
+    unit: "%",
+    series: [
+      { category: "1", value: 93 },
+      { category: "2", value: 95 },
+      { category: "3", value: 91 },
+      { category: "4", value: 97.5 },
+      { category: "5", value: 99},
+    ]
+  },
+  {
+    id: "figure2h",
+    groupId: "filters",
+    groupLabel: "Operating window · Filter count",
+    metricLabel: "Recovery vs filter number",
+    title: "Recovery vs Filter Number",
+    xLabel: "Filter Count",
+    yLabel: "Recovery (%)",
+    unit: "%",
+    series: [
+      { category: "1", value: 92.5 },
+      { category: "2", value: 78 },
+      { category: "3", value: 69 },
+      { category: "4", value: 62 },
+      { category: "5", value: 53 },
+    ]
+  },
+  {
+    id: "figure3b",
+    groupId: "dose-cargo",
+    groupLabel: "Cargo & cell line · Dose / size",
+    metricLabel: "MDA-MB-231 dose–response",
+    title: "Delivery Efficiency vs Concentration (MDA-MB-231)",
+    xLabel: "Concentration (µg/mL)",
+    yLabel: "Efficiency (%)",
+    unit: "%",
+    series: [
+      { category: "10",   value: 70.0 },
+      { category: "50",   value: 92.5 },
+      { category: "100",  value: 94.7 },
+      { category: "500",  value: 98.7 },
+      { category: "1000", value: 99.5 }
+    ]
+  },
+  {
+    id: "figure3d",
+    groupId: "dose-cargo",
+    groupLabel: "Cargo & cell line · Dose / size",
+    metricLabel: "Jurkat dose–response",
+    title: "Delivery Efficiency vs Concentration (Jurkat)",
+    xLabel: "Concentration (µg/mL)",
+    yLabel: "Efficiency (%)",
+    unit: "%",
+    series: [
+      { category: "10",   value: 18 },
+      { category: "50",   value: 38 },
+      { category: "100",  value: 65 },
+      { category: "500",  value: 90 },
+      { category: "1000", value: 97.5 }
+    ]
+  },
+  {
+    id: "figure3f",
+    groupId: "dose-cargo",
+    groupLabel: "Cargo & cell line · Dose / size",
+    metricLabel: "Cargo size (FITC-dextran MW)",
+    title: "Delivery Efficiency vs Cargo Size (MDA-MB-231)",
+    xLabel: "Dextran MW (kDa)",
+    yLabel: "Efficiency (%)",
+    unit: "%",
+    series: [
+      { category: "4",    value: 99 },
+      { category: "70",   value: 97.5 },
+      { category: "2000", value: 94.3 }
+    ]
+  },
+  {
+    id: "figure4c",
+    groupId: "methods",
+    groupLabel: "Method comparison · μCytoD™ vs lipofection",
+    metricLabel: "Delivery efficiency (% GFP+)",
+    title: "Delivery Efficiency (% GFP+)",
+    xLabel: "Method",
+    yLabel: "Efficiency (%)",
+    unit: "%",
+    series: [
+      { category: "Control",              value: 5 },
+      { category: "Lipofection",          value: 45.9 },
+      { category: "Filter",               value: 97.8 },
+      { category: "Lipofection + Filter", value: 94.7 }
+    ]
+  },
+  {
+    id: "figure4d",
+    groupId: "methods",
+    groupLabel: "Method comparison · μCytoD™ vs lipofection",
+    metricLabel: "MFI fold (relative to lipofection)",
+    title: "MFI Fold (relative to Lipofection)",
+    xLabel: "Method",
+    yLabel: "MFI Fold",
+    unit: "AU",
+    series: [
+      { category: "Control",              value: 1 },
+      { category: "Lipofection",          value: 4.73 },
+      { category: "Filter",               value: 16.61 },
+      { category: "Lipofection + Filter", value: 50.94 }
+    ]
+  },
+  {
+    id: "figure4e",
+    groupId: "methods",
+    groupLabel: "Method comparison · μCytoD™ vs lipofection",
+    metricLabel: "Viability (%)",
+    title: "Viability (%)",
+    xLabel: "Method",
+    yLabel: "Viability",
+    unit: "%",
+    series: [
+      { category: "Control",              value: 100 },
+      { category: "Lipofection",          value: 97.3 },
+      { category: "Filter",               value: 94.3 },
+      { category: "Lipofection + Filter", value: 92.5 }
+    ]
+  }
+];
+
+const mainSvg = d3.select("#main-chart");
+const perfTooltip = d3.select("#performance-tooltip");
+let chartWidth, chartHeight;
+const chartMargin = { top: 24, right: 16, bottom: 52, left: 64 };
+
+const datasetButtonsContainer = document.getElementById("dataset-buttons");
+const groupButtonsContainer   = document.getElementById("group-buttons");
+let currentDatasetId = intracellularDatasets.length ? intracellularDatasets[0].id : null;
+let currentGroupId   = null;
+
+/* Helpers for grouping */
+function getGroups(){
+  const map = new Map();
+  intracellularDatasets.forEach(d => {
+    if(!map.has(d.groupId)){
+      map.set(d.groupId, { id:d.groupId, label:d.groupLabel });
+    }
+  });
+  return Array.from(map.values());
+}
+
+function getDatasetsForCurrentGroup(){
+  if(!currentGroupId){
+    return intracellularDatasets;
+  }
+  return intracellularDatasets.filter(d => d.groupId === currentGroupId);
+}
+
+function computeDimensions(){
+  const bbox = mainSvg.node().getBoundingClientRect();
+  chartWidth  = bbox.width || 560;
+  chartHeight = bbox.height || 260;
+  mainSvg
+    .attr("width", chartWidth)
+    .attr("height", chartHeight);
+}
+
+function getCurrentDataset(){
+  if(!intracellularDatasets.length) return null;
+  return intracellularDatasets.find(d => d.id === currentDatasetId) || intracellularDatasets[0];
+}
+
+function renderPerformanceChart(){
+  const config = getCurrentDataset();
+  if(!config) return;
+
+  const data = config.series;
+  const unit = config.unit || "";
+
+document.getElementById("chart-title").textContent = config.title;
+    config.metricLabel + " Hover for exact values";
+
+  const containerW = document.getElementById("chart-area").getBoundingClientRect().width;
+  mainSvg.attr("width", containerW);
+  computeDimensions();
+
+  mainSvg.selectAll("*").remove();
+
+  const innerW = chartWidth  - chartMargin.left - chartMargin.right;
+  const innerH = chartHeight - chartMargin.top  - chartMargin.bottom;
+
+  const g = mainSvg.append("g")
+    .attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
+
+  const x = d3.scaleBand()
+    .domain(data.map(d => d.category))
+    .range([0, innerW])
+    .padding(0.45);
+
+  const maxVal = d3.max(data, d => d.value) || 1;
+
+  let yMax;
+  if(unit === "%"){
+    yMax = 100;
+  } else {
+    yMax = maxVal * 1.1;
+  }
+
+  const y = d3.scaleLinear()
+    .domain([0, yMax])
+    .range([innerH, 0])
+    .nice();
+
+  // NO GRIDLINES
+
+  const xAxis = d3.axisBottom(x);
+  const yAxis = d3.axisLeft(y)
+    .ticks(4)
+    .tickFormat(d => unit === "%" ? d + "%" : d);
+
+  g.append("g")
+    .attr("transform", `translate(0,${innerH})`)
+    .call(xAxis)
+    .selectAll("text")
+    .style("font-size","12px");
+
+  g.append("g")
+    .call(yAxis)
+    .selectAll("text")
+    .style("font-size","12px");
+
+  // axis titles
+  g.append("text")
+    .attr("class","axis-title")
+    .attr("x", innerW / 2)
+    .attr("y", innerH + 36)
+    .attr("text-anchor","middle")
+    .text(config.xLabel);
+
+  g.append("text")
+    .attr("class","axis-title")
+    .attr("transform","rotate(-90)")
+    .attr("x", -innerH / 2)
+    .attr("y", -46)
+    .attr("text-anchor","middle")
+    .text(config.yLabel + (unit && unit !== "%" ? " (" + unit + ")" : ""));
+
+  const barWidth = x.bandwidth();
+
+  const bars = g.selectAll("rect.bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class","bar")
+    .attr("x", d => x(d.category))
+    .attr("y", innerH)
+    .attr("width", barWidth)
+    .attr("height", 0)
+    .attr("rx", 6)
+    .attr("fill", "#0047ab");
+
+  // bar grow animation
+  bars
+    .transition()
+    .duration(650)
+    .attr("y", d => y(d.value))
+    .attr("height", d => innerH - y(d.value));
+
+  // INTERACTION
+  bars
+    .on("mouseover", function(event, d){
+      const chartArea = document.getElementById("chart-area");
+      const pt = d3.pointer(event, chartArea);
+
+      d3.select(this)
+        .raise()
+        .attr("fill","#1d4ed8")
+        .attr("y", y(d.value) - 4)
+        .attr("height", innerH - y(d.value) + 4);
+
+      const labelText = d.label || d.category;
+      const valueText = unit === "%" ? d.value.toFixed(1) + "%" : d.value.toFixed(2) + (unit ? " " + unit : "");
+
+      perfTooltip
+        .style("opacity",1)
+        .style("left", (pt[0] + 14) + "px")
+        .style("top",  (pt[1] + 14) + "px")
+        .html(
+          "<strong>" + labelText + "</strong><br>" +
+          config.metricLabel + "<br>" +
+          "<span style='color:#4b5563;'>Value:</span> " + valueText
+        );
+    })
+    .on("mousemove", function(event){
+      const chartArea = document.getElementById("chart-area");
+      const pt = d3.pointer(event, chartArea);
+      perfTooltip
+        .style("left", (pt[0] + 14) + "px")
+        .style("top",  (pt[1] + 14) + "px");
+    })
+    .on("mouseout", function(event, d){
+      d3.select(this)
+        .attr("fill","#0047ab")
+        .attr("y", y(d.value))
+        .attr("height", innerH - y(d.value));
+
+      perfTooltip.style("opacity",0);
+    });
+
+  // quick stats
+  const values = data.map(d => d.value);
+  const minV   = d3.min(values);
+  const maxV2  = d3.max(values);
+  const avgV   = d3.mean(values);
+  const bestIdx = values.indexOf(maxV2);
+
+  document.getElementById("stat-best").textContent =
+    data[bestIdx].category + " (" + maxV2.toFixed(1) + (unit==="%" ? "%" : (unit ? " " + unit : "")) + ")";
+  document.getElementById("stat-spread").textContent =
+    (maxV2 - minV).toFixed(1) + (unit==="%" ? "%" : (unit ? " " + unit : ""));
+  document.getElementById("stat-avg").textContent =
+    avgV.toFixed(1) + (unit==="%" ? "%" : (unit ? " " + unit : ""));
+  document.getElementById("stat-n").textContent = data.length.toString();
+}
+
+function updateDatasetButtons(){
+  if(!datasetButtonsContainer) return;
+  const buttons = datasetButtonsContainer.querySelectorAll("button.dataset-btn");
+  buttons.forEach(btn => {
+    if(btn.dataset.id === currentDatasetId){
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+}
+
+function initDatasetButtons(){
+  if(!datasetButtonsContainer) return;
+  datasetButtonsContainer.innerHTML = "";
+  const dsList = getDatasetsForCurrentGroup();
+
+  dsList.forEach(config => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn-ghost dataset-btn";
+    btn.dataset.id = config.id;
+    btn.textContent = config.metricLabel;
+    btn.addEventListener("click", () => {
+      currentDatasetId = config.id;
+      updateDatasetButtons();
+      renderPerformanceChart();
+    });
+    datasetButtonsContainer.appendChild(btn);
+  });
+
+  if(dsList.length && !currentDatasetId){
+    currentDatasetId = dsList[0].id;
+  }
+  updateDatasetButtons();
+}
+
+function updateGroupButtons(){
+  if(!groupButtonsContainer) return;
+  const buttons = groupButtonsContainer.querySelectorAll("button.group-btn");
+  buttons.forEach(btn => {
+    if(btn.dataset.id === currentGroupId){
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+}
+
+function initGroupButtons(){
+  if(!groupButtonsContainer) return;
+  groupButtonsContainer.innerHTML = "";
+  const groups = getGroups();
+
+  if(!currentGroupId && groups.length){
+    currentGroupId = groups[0].id;
+  }
+
+  groups.forEach(group => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn-ghost group-btn";
+    btn.dataset.id = group.id;
+    btn.textContent = group.label;
+    btn.addEventListener("click", () => {
+      currentGroupId = group.id;
+      const dsList = getDatasetsForCurrentGroup();
+      currentDatasetId = dsList.length ? dsList[0].id : null;
+      updateGroupButtons();
+      initDatasetButtons();
+      renderPerformanceChart();
+    });
+    groupButtonsContainer.appendChild(btn);
+  });
+
+  updateGroupButtons();
+}
+
+/*
+  DEMOGRAPHICS & CONTACTS
+*/
+
+// Mapping country → region
+const COUNTRY_REGION_MAP = {
+  "Singapore": "Asia",
+  "United States": "North America",
+  "China": "Asia",
+  "Switzerland": "Europe",
+  "United Kingdom": "Europe",
+  "Netherlands": "Europe",
+  "India": "Asia",
+  "Australia": "Oceania",
+  "Bangladesh": "Asia",
+  "Sweden": "Europe",
+  "Ireland": "Europe",
+  "Austria": "Europe",
+  "United Arab Emirates": "Asia",
+  "Germany": "Europe"
+};
+
+// Map feature name → data key
+const COUNTRY_NAME_REWRITE = {
+  "United States of America": "United States"
+};
+
+const REGION_COUNTRY_DATA = {
+  "Global": {
+    "United States": 153,
+    "United Kingdom": 42,
+    "China": 40,
+    "Switzerland": 36,
+    "Singapore": 23,
+    "Sweden": 15,
+    "Ireland": 14,
+    "Australia": 12,
+    "Netherlands": 5,
+    "India": 4,
+    "Bangladesh": 3,
+    "Austria": 3,
+    "United Arab Emirates": 1,
+    "Germany": 1
+  },
+  "Asia": {
+    "China": 40,
+    "Singapore": 23,
+    "India": 4,
+    "Bangladesh": 3,
+    "United Arab Emirates": 1
+  },
+  "Europe": {
+    "United Kingdom": 42,
+    "Switzerland": 36,
+    "Sweden": 15,
+    "Ireland": 14,
+    "Netherlands": 5,
+    "Austria": 3,
+    "Germany": 1
+  },
+  "North America": {
+    "United States": 153
+  },
+  "Oceania": {
+    "Australia": 12
+  }
+};
+
+const REGION_AREA_DATA = {
+  "Global": {
+    "Gene editing / genome engineering": 294,
+    "Cell / immunotherapy": 27,
+    "Other / basic biology": 16,
+    "Nanomedicine / delivery": 6,
+    "RNA / mRNA / virology": 5,
+    "Cancer / oncology": 2,
+    "Gene therapy / AAV": 2
+  },
+  "Asia": {
+    "Gene editing / genome engineering": 47,
+    "Other / basic biology": 8,
+    "RNA / mRNA / virology": 5,
+    "Nanomedicine / delivery": 5,
+    "Cancer / oncology": 2,
+    "Gene therapy / AAV": 2,
+    "Cell / immunotherapy": 2
+  },
+  "Europe": {
+    "Gene editing / genome engineering": 95,
+    "Cell / immunotherapy": 14,
+    "Other / basic biology": 7
+  },
+  "North America": {
+    "Gene editing / genome engineering": 140,
+    "Cell / immunotherapy": 11,
+    "Nanomedicine / delivery": 1,
+    "Other / basic biology": 1
+  },
+  "Oceania": {
+    "Gene editing / genome engineering": 12
+  }
+};
+
+let currentRegion = "Global";
+let worldFeatures = null;
+
+let mapZoom = null;
+const mapSvg     = d3.select("#choropleth");
+const mapTooltip = d3.select("#map-tooltip");
+const countryBarSvg = d3.select("#country-bar-svg");
+const countryBarTooltip = d3.select("#country-bar-tooltip");
+const areaSvg     = d3.select("#area-svg");
+const areaTooltip = d3.select("#area-tooltip");
+
+function displayCountryName(countryKey){
+  if(countryKey === "United States") return "USA";
+  if(countryKey === "United Kingdom") return "UK";
+  if(countryKey === "United Arab Emirates") return "UAE";
+  return countryKey;
+}
+
+/* Choropleth map with SG marker & zoom */
+function renderChoropleth(){
+  if (!mapSvg.node() || !worldFeatures) return;
+
+  const bbox   = mapSvg.node().getBoundingClientRect();
+  const width  = bbox.width || 600;
+  const height = +mapSvg.attr("height") || 360;
+
+  mapSvg.selectAll("*").remove();
+
+  const countryData = REGION_COUNTRY_DATA[currentRegion] || REGION_COUNTRY_DATA["Global"];
+  const activeKeys = new Set(Object.keys(countryData));
+
+  const globalValues = Object.values(REGION_COUNTRY_DATA["Global"]);
+  const globalMax = d3.max(globalValues) || 1;
+
+  const colorScale = d3.scaleLinear()
+    .domain([0, globalMax])
+    .range(["#e0ecff", "#0047ab"]);
+
+  const projection = d3.geoMercator()
+    .scale((width / 2 / Math.PI) * 1.15)
+    .translate([width / 2, height / 2]);
+
+  const path = d3.geoPath().projection(projection);
+  const totalContacts = d3.sum(Object.values(countryData)) || 1;
+
+  const mapGroup = mapSvg.append("g").attr("class","map-group");
+
+  function handleMapMouseover(event){
+    const key = d3.select(this).attr("data-country-key");
+    if(!key) return;
+    const value = countryData[key] || 0;
+    const pct   = value > 0 ? (value / totalContacts * 100).toFixed(1) : "0.0";
+
+    const container = document.getElementById("map-container");
+    const pt = d3.pointer(event, container);
+
+    mapTooltip
+      .style("opacity", 1)
+      .style("left", (pt[0] + 14) + "px")
+      .style("top",  (pt[1] + 14) + "px")
+      .html(
+        "<strong>" + displayCountryName(key) + "</strong><br>" +
+        "Contacts: " + value + (value>0 ? " (" + pct + "% of " + currentRegion + ")" : "")
+      );
+  }
+
+  function handleMapMousemove(event){
+    const container = document.getElementById("map-container");
+    const pt = d3.pointer(event, container);
+    mapTooltip
+      .style("left", (pt[0] + 14) + "px")
+      .style("top",  (pt[1] + 14) + "px");
+  }
+
+  function handleMapMouseout(){
+    mapTooltip.style("opacity", 0);
+  }
+
+  function handleMapClick(){
+    const key = d3.select(this).attr("data-country-key");
+    if(!key) return;
+    const region = COUNTRY_REGION_MAP[key];
+    if(region){
+      setRegion(region);
+    }
+  }
+
+  const countryPaths = mapGroup.selectAll(".map-country")
+    .data(worldFeatures)
+    .enter()
+    .append("path")
+    .attr("class","map-country")
+    .attr("d", path)
+    .each(function(d){
+      const featureName = d.properties.name;
+      const key = COUNTRY_NAME_REWRITE[featureName] || featureName;
+      d3.select(this).attr("data-country-key", key);
+    })
+    .attr("fill", d => {
+      const featureName = d.properties.name;
+      const key = COUNTRY_NAME_REWRITE[featureName] || featureName;
+      const value = countryData[key] || 0;
+      return activeKeys.has(key)
+        ? (value > 0 ? colorScale(value) : "#dbeafe")
+        : "#e5e7eb";
+    })
+    .attr("stroke", "#94a3b8")
+    .attr("stroke-width", 0.65)
+    .on("mouseover", handleMapMouseover)
+    .on("mousemove", handleMapMousemove)
+    .on("mouseout", handleMapMouseout)
+    .on("click", handleMapClick);
+
+  countryPaths
+    .filter(function(d){
+      if(!d || !d.properties) return false;
+      const featureName = d.properties.name;
+      const key = COUNTRY_NAME_REWRITE[featureName] || featureName;
+      return key === "Singapore";
+    })
+    .attr("stroke", "#111827")
+    .attr("stroke-width", 1.2);
+
+  const microMarkers = [
+    {
+      key: "Singapore",
+      lon: 103.8198,
+      lat: 1.3521
+    }
+  ];
+
+  microMarkers.forEach(d => {
+    const value = countryData[d.key] || 0;
+    if (value <= 0) return;
+
+    const [x, y] = projection([d.lon, d.lat]);
+
+    mapGroup.append("circle")
+      .attr("class", "map-country micro-marker")
+      .attr("data-country-key", d.key)
+      .attr("cx", x)
+      .attr("cy", y)
+      .attr("r", 3.2)
+      .attr("fill", colorScale(value))
+      .attr("stroke", "#111827")
+      .attr("stroke-width", 0.9)
+      .on("mouseover", handleMapMouseover)
+      .on("mousemove", handleMapMousemove)
+      .on("mouseout", handleMapMouseout)
+      .on("click", handleMapClick);
+  });
+
+
+  // Auto-focus map to the countries listed for the current region (so the filled countries occupy the panel)
+  (function applyFocusToActiveCountries(){
+    if(!worldFeatures) return;
+    const activeKeys = Object.entries(countryData)
+      .filter(([k,v]) => (v || 0) > 0)
+      .map(([k]) => k);
+
+    const activeFeatures = worldFeatures.filter(f => {
+      if(!f || !f.properties) return false;
+      const featureName = f.properties.name;
+      const key = COUNTRY_NAME_REWRITE[featureName] || featureName;
+      return activeKeys.includes(key);
+    });
+
+    if(!activeFeatures.length) return;
+
+    const b = path.bounds({ type:"FeatureCollection", features: activeFeatures });
+    const dx = b[1][0] - b[0][0];
+    const dy = b[1][1] - b[0][1];
+    if(!dx || !dy) return;
+
+    // Fit bounds with padding; clamp to zoom extent
+    const minScale = 0.75;
+    const maxScale = 12;
+    const pad = (currentRegion === "Global") ? 0.86 : 0.92;
+    let scale = pad / Math.max(dx / width, dy / height);
+    scale = Math.max(minScale, Math.min(maxScale, scale));
+
+    const tx = (width  - scale * (b[0][0] + b[1][0])) / 2;
+    const ty = (height - scale * (b[0][1] + b[1][1])) / 2;
+
+    const t = d3.zoomIdentity.translate(tx, ty).scale(scale);
+
+    // If zoom is enabled, sync transform with it so pan/zoom remains natural
+    if(mapZoom){
+      mapSvg.call(mapZoom.transform, t);
+    } else {
+      mapGroup.attr("transform", t);
+    }
+  })();
+
+  const legendWidth  = 140;
+  const legendHeight = 10;
+  const legendMargin = 12;
+
+  const defsMap = mapSvg.append("defs");
+  const grad    = defsMap.append("linearGradient")
+    .attr("id", "map-legend-gradient")
+    .attr("x1", "0%").attr("x2", "100%")
+    .attr("y1", "0%").attr("y2", "0%");
+
+  grad.append("stop").attr("offset","0%").attr("stop-color","#e0ecff");
+  grad.append("stop").attr("offset","100%").attr("stop-color","#0047ab");
+
+  const legendGroup = mapSvg.append("g")
+    .attr("class","map-legend-group")
+    .attr("transform", "translate(" + legendMargin + "," + (height - legendMargin - legendHeight - 8) + ")");
+
+  legendGroup.append("rect")
+    .attr("width",  legendWidth)
+    .attr("height", legendHeight)
+    .attr("rx", 4)
+    .attr("fill", "url(#map-legend-gradient)");
+
+  legendGroup.append("text")
+    .attr("x", 0)
+    .attr("y", -3)
+    .text("Fewer")
+    .attr("text-anchor","start");
+
+  legendGroup.append("text")
+    .attr("x", legendWidth)
+    .attr("y", -3)
+    .text("More")
+    .attr("text-anchor","end");
+}
+
+function enableMapZoom(){
+  mapZoom = d3.zoom()
+    .scaleExtent([0.75, 12])
+    .on("zoom", (event) => {
+      mapSvg.selectAll(".map-group").attr("transform", event.transform);
+      mapSvg.style("cursor","grabbing");
+    })
+    .on("end", () => {
+      mapSvg.style("cursor","grab");
+    });
+
+  mapSvg.call(mapZoom);
+}
+
+/* More interactive top-country bar chart (no numbers above bars) */
+function renderCountryBars(){
+  if (!countryBarSvg.node()) return;
+
+  const bbox   = countryBarSvg.node().getBoundingClientRect();
+  const width  = bbox.width || 400;
+  const height = +countryBarSvg.attr("height") || 180;
+
+  countryBarSvg.selectAll("*").remove();
+
+  const regionData = REGION_COUNTRY_DATA[currentRegion] || {};
+  const entries = Object.entries(regionData);
+  const data = entries
+    .map(([country,value]) => ({
+      key: country,
+      label: displayCountryName(country),
+      value
+    }))
+    .sort((a,b) => b.value - a.value)
+    .slice(0, 8);
+
+  const margin = { top: 4, right: 6, bottom: 24, left: 90 };
+  const innerW = width  - margin.left - margin.right;
+  const innerH = height - margin.top  - margin.bottom;
+
+  const g = countryBarSvg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  const y = d3.scaleBand()
+    .domain(data.map(d => d.label))
+    .range([0, innerH])
+    .padding(0.22);
+
+  const globalValues = Object.values(REGION_COUNTRY_DATA["Global"]);
+  const globalMax = d3.max(globalValues) || 1;
+
+  const x = d3.scaleLinear()
+    .domain([0, globalMax])
+    .range([0, innerW])
+    .nice();
+
+  g.append("g")
+    .attr("class","axis y-axis")
+    .call(d3.axisLeft(y).tickSize(0))
+    .selectAll("text")
+    .style("font-size","12px")
+    .style("fill","#334155");
+
+  g.append("g")
+    .attr("class","axis x-axis")
+    .attr("transform", "translate(0," + innerH + ")")
+    .call(d3.axisBottom(x).ticks(4).tickSize(0))
+    .selectAll("text")
+    .style("font-size","12px")
+    .style("fill","#334155");
+
+  const bars = g.selectAll("rect.bar-country")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class","bar-country")
+    .attr("x",0)
+    .attr("y",d => y(d.label))
+    .attr("height", y.bandwidth())
+    .attr("width",0)
+    .attr("rx",5)
+    .attr("fill","var(--accent)");
+
+  bars
+    .on("mouseover", function(event,d){
+      const regionTotal = d3.sum(Object.values(regionData)) || 1;
+      const pct = (d.value / regionTotal * 100).toFixed(1);
+
+      const wrap = document.getElementById("country-bar-wrap");
+      const pt = d3.pointer(event, wrap);
+      countryBarTooltip
+        .style("opacity",1)
+        .style("left", (pt[0] + 12) + "px")
+        .style("top",  (pt[1] + 12) + "px")
+        .html(
+          "<strong>" + displayCountryName(d.key) + "</strong><br>" +
+          "Contacts: " + d.value + " (" + pct + "% of " + currentRegion + ")"
+        );
+
+      // grow + highlight hovered bar
+      d3.select(this)
+        .raise()
+        .transition()
+        .duration(150)
+        .attr("fill","var(--accent-strong)")
+        .attr("height", y.bandwidth() * 1.05)
+        .attr("y", (y(d.label) || 0) - (y.bandwidth()*0.025));
+
+      // highlight corresponding country on map
+      d3.selectAll(".map-country")
+        .attr("stroke","#94a3b8")
+        .attr("stroke-width",0.65);
+
+      d3.selectAll(".map-country")
+        .filter(function(){
+          return d3.select(this).attr("data-country-key") === d.key;
+        })
+        .attr("stroke","#111827")
+        .attr("stroke-width",1.8);
+    })
+    .on("mousemove", function(event){
+      const wrap = document.getElementById("country-bar-wrap");
+      const pt = d3.pointer(event, wrap);
+      countryBarTooltip
+        .style("left", (pt[0] + 12) + "px")
+        .style("top",  (pt[1] + 12) + "px");
+    })
+    .on("mouseout", function(event,d){
+      countryBarTooltip.style("opacity",0);
+
+      // reset bar style
+      d3.select(this)
+        .transition()
+        .duration(150)
+        .attr("fill","var(--accent)")
+        .attr("height", y.bandwidth())
+        .attr("y", y(d.label));
+
+      // Reset all countries to default stroke
+      d3.selectAll(".map-country")
+        .attr("stroke", function(){
+          const el = d3.select(this);
+          return el.classed("micro-marker") ? "#111827" : "#cbd5e1";
+        })
+        .attr("stroke-width", function(){
+          const el = d3.select(this);
+          return el.classed("micro-marker") ? 0.9 : 0.5;
+        });
+
+      // Re-emphasise Singapore polygon if present
+      d3.selectAll(".map-country")
+        .filter(function(d){
+          if(!d || !d.properties) return false;
+          const featureName = d.properties.name;
+          const key = COUNTRY_NAME_REWRITE[featureName] || featureName;
+          return key === "Singapore";
+        })
+        .attr("stroke", "#111827")
+        .attr("stroke-width", 1.2);
+    })
+    .on("click", function(event,d){
+      const region = COUNTRY_REGION_MAP[d.key];
+      if(region && region !== currentRegion){
+        setRegion(region);
+      }
+    });
+
+  bars.transition()
+    .duration(650)
+    .attr("width", d => x(d.value));
+
+  const labelEl = document.getElementById("country-region-label");
+  if(labelEl) labelEl.textContent = currentRegion;
+}
+
+/* Area donut chart with interactive hover expansion */
+function getAreaDataForRegion(region){
+  const raw = REGION_AREA_DATA[region] || {};
+  const order = [
+    "Gene editing / genome engineering",
+    "Cell / immunotherapy",
+    "Other / basic biology",
+    "Nanomedicine / delivery",
+    "RNA / mRNA / virology",
+    "Cancer / oncology",
+    "Gene therapy / AAV"
+  ];
+  return order.map(label => ({ label, value: raw[label] || 0 }))
+              .filter(d => d.value > 0);
+}
+
+function renderAreaDonut(){
+  if (!areaSvg.node()) return;
+
+  const bbox   = areaSvg.node().getBoundingClientRect();
+  const width  = bbox.width || 360;
+  const height = +areaSvg.attr("height") || 260;
+
+  areaSvg.selectAll("*").remove();
+
+  const data = getAreaDataForRegion(currentRegion);
+  const radius = Math.min(width, height) / 2 - 10;
+  const g = areaSvg.append("g")
+    .attr("transform", "translate(" + (width/2) + "," + (height/2) + ")");
+
+  const total = d3.sum(data, d => d.value) || 1;
+
+  const color = d3.scaleOrdinal()
+    .domain(data.map(d => d.label))
+    .range([
+      "#0047ab",
+      "#ff9f43",
+      "#22c55e",
+      "#6366f1",
+      "#ec4899",
+      "#14b8a6",
+      "#0f172a"
+    ]);
+
+  const pie = d3.pie()
+    .value(d => d.value)
+    .sort(null);
+
+  const arc = d3.arc()
+    .innerRadius(radius * 0.55)
+    .outerRadius(radius);
+
+  const arcHover = d3.arc()
+    .innerRadius(radius * 0.55)
+    .outerRadius(radius * 1.06);
+
+    function resetDonut(){
+    areaTooltip.style("opacity", 0);
+
+    g.selectAll("path.donut-slice")
+      .interrupt()                 // cancel any in-flight hover transitions
+      .transition()
+      .duration(150)
+      .attr("d", arc)              // back to original shape
+      .style("opacity", 1);        // back to full opacity
+  }
+
+  const slices = g.selectAll("path.donut-slice")
+    .data(pie(data))
+    .enter()
+    .append("path")
+    .attr("class","donut-slice")
+    .attr("d", arc)
+    .attr("fill", d => color(d.data.label))
+    .attr("stroke","#ffffff")
+    .attr("stroke-width",1)
+    .on("mouseover", function(event, d){
+      // stop any previous animations so nothing gets stuck
+      g.selectAll("path.donut-slice").interrupt();
+
+      const pct  = (d.data.value / total * 100).toFixed(1);
+      const wrap = document.getElementById("area-donut-wrap");
+      const pt   = d3.pointer(event, wrap);
+
+      areaTooltip
+        .style("opacity", 1)
+        .style("left", (pt[0] + 14) + "px")
+        .style("top",  (pt[1] + 14) + "px")
+        .html(
+          "<strong>" + d.data.label + "</strong><br>" +
+          "Contacts: " + d.data.value + " (" + pct + "%)"
+        );
+
+      // pop-out hovered slice and dim others
+      d3.select(this)
+        .raise()
+        .interrupt()
+        .transition()
+        .duration(150)
+        .attr("d", arcHover(d));
+
+      g.selectAll("path.donut-slice")
+        .filter(p => p !== d)
+        .transition()
+        .duration(150)
+        .style("opacity", 0.45);
+    })
+    .on("mousemove", function(event){
+      const wrap = document.getElementById("area-donut-wrap");
+      const pt   = d3.pointer(event, wrap);
+      areaTooltip
+        .style("left", (pt[0] + 14) + "px")
+        .style("top",  (pt[1] + 14) + "px");
+    })
+    .on("mouseout", resetDonut);
+
+  // If the pointer leaves the SVG quickly (no slice mouseout), still reset
+  areaSvg.on("mouseleave", resetDonut);
+
+
+  if(data.length > 0){
+    const top = data.slice().sort((a,b)=>b.value-a.value)[0];
+    g.append("text")
+      .attr("text-anchor","middle")
+      .attr("dy","-4")
+      .style("font-size","12px")
+      .style("fill","var(--text-muted)")
+      .text(currentRegion + " focus");
+
+    g.append("text")
+      .attr("text-anchor","middle")
+      .attr("dy","14")
+      .style("font-size","12px")
+      .style("font-weight","600")
+      .style("fill","var(--accent-strong)")
+      .text(top.label.split(" / ")[0]);
+  }
+
+  const labelEl = document.getElementById("area-region-label");
+  if(labelEl) labelEl.textContent = currentRegion;
+}
+
+/* Region selection */
+function setRegion(region){
+  currentRegion = region;
+
+  const pills = document.querySelectorAll("#region-pills button[data-region]");
+  pills.forEach(btn => {
+    if(btn.dataset.region === region){
+      btn.classList.add("active");
+      btn.style.background = "rgba(0,71,171,0.08)";
+    } else {
+      btn.classList.remove("active");
+      btn.style.background = "";
+    }
+  });
+
+  renderAreaDonut();
+  renderCountryBars();
+  renderChoropleth();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // performance chart
+  initGroupButtons();
+  initDatasetButtons();
+  computeDimensions();
+  renderPerformanceChart();
+
+  // region pills
+  const pills = document.querySelectorAll("#region-pills button[data-region]");
+  pills.forEach(btn => {
+    btn.addEventListener("click", () => setRegion(btn.dataset.region));
+  });
+  setRegion("Global");
+
+  // world map
+  d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(worldData => {
+    worldFeatures = topojson.feature(worldData, worldData.objects.countries).features;
+    enableMapZoom();
+    renderChoropleth();
+  });
+});
+
+window.addEventListener("resize", () => {
+  computeDimensions();
+  renderPerformanceChart();
+  renderChoropleth();
+  renderCountryBars();
+  renderAreaDonut();
+});
+</script>
+<script id="uc-shared-script">
+(function(){
+  // nav buttons
+  document.querySelectorAll('[data-nav]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var href = btn.getAttribute('data-nav');
+      if(href) location.href = href;
+    });
+  });
+
+  // mobile menu toggle
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('nav-toggle');
+  var mobile = document.getElementById('nav-mobile');
+
+  function closeMenu(){
+    if(!nav) return;
+    nav.classList.remove('is-open');
+    if(toggle) toggle.setAttribute('aria-expanded','false');
+  }
+
+  if(toggle && nav){
+    toggle.addEventListener('click', function(){
+      var open = nav.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  if(mobile){
+    mobile.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', closeMenu);
+    });
+  }
+
+  // year
+  var y = document.getElementById('uc-year');
+  if(y) y.textContent = new Date().getFullYear();
+
+  // close on escape
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeMenu();
+  });
+
+  // close on outside click
+  document.addEventListener('click', function(e){
+    if(!nav || !nav.classList.contains('is-open')) return;
+    if(!nav.contains(e.target)) closeMenu();
+  });
+})();
+</script>
+</body>
+</html>
